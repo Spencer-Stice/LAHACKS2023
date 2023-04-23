@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "SmartMark",
+  "name": "Quill",
   "version": "1.0",
   "description": "An AI-powered smart research tool",
   "permissions": ["activeTab", "tabs", "tabGroups", "runtime", "background", "<all_urls>", "storage"],
