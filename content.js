@@ -8,6 +8,8 @@ const YOUR_API_KEY = "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";
 
 var txtOutput = "";
 
+var query_picked = 0;
+
 var query_return_done;
 
 var image = document.createElement("img");
@@ -39,7 +41,7 @@ const url = window.location.href;
 function getText(pageNumber) {
   const loadingTask = pdfjsLib.getDocument(url);
   const loadingPage = loadingTask.promise.then(function(pdf) {
-    var page = pdf.getPage(pageNumber);
+    var page = pdf.getPage(parseInt(pageNumber));
     return page;
   });
   const loadingText = loadingPage.then(function(page) {
@@ -94,10 +96,11 @@ function createHighlightDotPdf() {
     event.target.style.transform = "scale(1)";
   });
 
-  menu_div.addEventListener("transitionend", function() {
-    if (menu_div.style.transform === "scale(3)")
-      pdfPageQuery();
+  menu_div.addEventListener("transitionend", function(event) {
+    if (event.propertyName == "color"){
       menu_div.remove();
+      pdfPageQuery();
+    }
   });
 
   document.body.appendChild(menu_div);
@@ -124,7 +127,6 @@ function stylizePdfPageQuery(box) {
 
 //creates a textbox to input which page the user would like explained
 function pdfPageQuery() {
-  
     const query_input = document.createElement('input');
     query_input.type = 'text';
     query_input.setAttribute("id", "query_input");
@@ -155,6 +157,23 @@ function pdfPageQuery() {
           level += 1
           query_input.style.height = height + 'px';
           query_input.value += "\n";
+      }
+    });
+
+    query_input.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        // Enter key was pressed
+
+        const query_return_done = getText(query_input.value).then(function(text) {
+          var message_to_send = cleanPageText(text);
+          return Send(message_to_send, 1);
+        });
+  
+        query_return_done.then(function(){
+          handleResponse(parseInt(query_input.style.left), parseInt(query_input.style.top) + 60);
+          query_input.remove();
+          createHighlightDotPdf();
+        });
       }
     });
 
@@ -206,6 +225,7 @@ function onUnload() {
 window.addEventListener('beforeunload', onUnload);
 
 function queryMoment(selectedText) {
+  query_picked = 1;
   var explanation = document.getElementById("explain_button");
   if (explanation) {
     explanation.remove();
@@ -241,7 +261,7 @@ function queryMoment(selectedText) {
 
   const query_input = document.createElement('input').appendChild(textarea);
   query_input.type = 'text';
-  query_input.setAttribute("id", "query_input");
+  query_input.setAttribute("id", "query_input_");
   query_input.classList.add('query_input-class');
   //query_input.textContent = "What's your question...";
   query_input.value = "What's your question....";
@@ -285,10 +305,27 @@ function queryMoment(selectedText) {
       console.log(inputValue);
       var message_to_send = "I have a question about the following: " + selectedText + "Please tell me: " + inputValue;
       console.log(message_to_send);
-      query_return_done = Send(message_to_send, 3);
+
+      console.log("trying to add loading image");
+      var load = document.createElement("img");
+      load.src = chrome.runtime.getURL("./my_loading.gif");
+      load.style.position = "fixed";
+      load.style.opacity = "1";
+      load.style.left = (parseInt(query_input.style.left) + 100 ) + "px";
+      load.style.top = (parseInt(query_input.style.top) - 20) + "px";
+      load.style.maxWidth = "20px";
+      load.style.maxHeight = "20px";
+      load.style.borderRadius = "10px";
+      document.body.appendChild(load);
+
+
+      query_return_done = Send(message_to_send, 2);
+
+      
 
       query_return_done.then(function(){
-      handleResponse(parseInt(query_input.style.left), parseInt(query_input.style.top) + 60)
+        load.style.opacity = "0";
+        handleResponse(parseInt(query_input.style.left), parseInt(query_input.style.top) + 60);
         });
     }
   });
@@ -419,6 +456,7 @@ function createHighlightDotMain(initial_div, text){
 
 
       explain_button.addEventListener("click", function(event) {
+        query_picked = 0;
         var element = document.getElementById("query_button");
         element.remove();
         element = document.getElementById("examples_button");
@@ -438,7 +476,10 @@ function createHighlightDotMain(initial_div, text){
         console.log("before promise");
         promise.then( function () {
           console.log("after promis");
-          image.style.opacity = "0";
+          if(query_picked !== 1){
+            image.style.opacity = "0";
+            console.log("opacity 0");
+          }
           var element = document.getElementById("explain_button");
           element.remove();
           handleResponse(parseInt(explain_button.style.left + 100), parseInt(explain_button.style.top) + 50);
@@ -447,6 +488,7 @@ function createHighlightDotMain(initial_div, text){
       });
 
       examples_button.addEventListener("click", function(event) {
+        query_picked = 0;
         var element = document.getElementById("query_button");
         element.remove();
         element = document.getElementById("explain_button");
@@ -466,7 +508,10 @@ function createHighlightDotMain(initial_div, text){
         console.log("before promise");
         promise_examples.then(function(){
           console.log("after promis");
-          image.style.opacity = "0";
+          if(query_picked !== 1){
+            image.style.opacity = "0";
+            console.log("opacity 0");
+          }
           var element = document.getElementById("examples_button");
           element.remove();
           handleResponse(parseInt(examples_button.style.left + 100), parseInt(examples_button.style.top) + 50);
