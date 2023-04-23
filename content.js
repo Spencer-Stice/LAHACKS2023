@@ -5,10 +5,13 @@
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
 
-const YOUR_API_KEY = "abc";
+
+const YOUR_API_KEY = "aydf";
 
 
 var txtOutput = "";
+
+var query_picked = 0;
 
 var query_return_done;
 
@@ -225,6 +228,7 @@ function onUnload() {
 window.addEventListener('beforeunload', onUnload);
 
 function queryMoment(selectedText) {
+  query_picked = 1;
   var explanation = document.getElementById("explain_button");
   if (explanation) {
     explanation.remove();
@@ -260,7 +264,7 @@ function queryMoment(selectedText) {
 
   const query_input = document.createElement('input').appendChild(textarea);
   query_input.type = 'text';
-  query_input.setAttribute("id", "query_input");
+  query_input.setAttribute("id", "query_input_");
   query_input.classList.add('query_input-class');
   //query_input.textContent = "What's your question...";
   query_input.value = "What's your question....";
@@ -304,10 +308,27 @@ function queryMoment(selectedText) {
       console.log(inputValue);
       var message_to_send = "I have a question about the following: " + selectedText + "Please tell me: " + inputValue;
       console.log(message_to_send);
-      query_return_done = Send(message_to_send, 3);
+
+      console.log("trying to add loading image");
+      var load = document.createElement("img");
+      load.src = chrome.runtime.getURL("./my_loading.gif");
+      load.style.position = "fixed";
+      load.style.opacity = "1";
+      load.style.left = (parseInt(query_input.style.left) + 100 ) + "px";
+      load.style.top = (parseInt(query_input.style.top) - 20) + "px";
+      load.style.maxWidth = "20px";
+      load.style.maxHeight = "20px";
+      load.style.borderRadius = "10px";
+      document.body.appendChild(load);
+
+
+      query_return_done = Send(message_to_send, 2);
+
+      
 
       query_return_done.then(function(){
-      handleResponse(parseInt(query_input.style.left), parseInt(query_input.style.top) + 60)
+        load.style.opacity = "0";
+        handleResponse(parseInt(query_input.style.left), parseInt(query_input.style.top) + 60);
         });
     }
   });
@@ -383,8 +404,8 @@ function createHighlightDotMain(initial_div, text){
 
     initial_div.addEventListener("transitionend", function() {
       if (initial_div.style.transform === "scale(3)") {
-      promise = Send(text, false);
-      promise_examples = Send(text, true)
+      promise = Send(text, 1);
+      promise_examples = Send(text, 0)
 
       // create new button
       var explain_button = document.createElement("button");
@@ -441,6 +462,7 @@ function createHighlightDotMain(initial_div, text){
         queryMoment();
       })
       explain_button.addEventListener("click", function(event) {
+        query_picked = 0;
         var element = document.getElementById("query_button");
         element.remove();
         element = document.getElementById("examples_button");
@@ -460,7 +482,10 @@ function createHighlightDotMain(initial_div, text){
         console.log("before promise");
         promise.then( function () {
           console.log("after promis");
-          image.style.opacity = "0";
+          if(query_picked !== 1){
+            image.style.opacity = "0";
+            console.log("opacity 0");
+          }
           var element = document.getElementById("explain_button");
           element.remove();
           handleResponse(parseInt(explain_button.style.left + 100), parseInt(explain_button.style.top) + 50);
@@ -469,6 +494,7 @@ function createHighlightDotMain(initial_div, text){
       });
 
       examples_button.addEventListener("click", function(event) {
+        query_picked = 0;
         var element = document.getElementById("query_button");
         element.remove();
         element = document.getElementById("explain_button");
@@ -488,7 +514,10 @@ function createHighlightDotMain(initial_div, text){
         console.log("before promise");
         promise_examples.then(function(){
           console.log("after promis");
-          image.style.opacity = "0";
+          if(query_picked !== 1){
+            image.style.opacity = "0";
+            console.log("opacity 0");
+          }
           var element = document.getElementById("examples_button");
           element.remove();
           handleResponse(parseInt(examples_button.style.left + 100), parseInt(examples_button.style.top) + 50);
