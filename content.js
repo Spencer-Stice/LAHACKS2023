@@ -57,7 +57,6 @@ const url = window.location.href;
 if (url.split(/[#?]/)[0].split('.').pop().trim() == "pdf") {
   //initialize pdf object
   var pdfjsLib = window['pdfjs-dist/build/pdf'];
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 
   getText(1).then(function(text) {
     var temp = cleanPageText(text);
