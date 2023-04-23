@@ -4,9 +4,7 @@
 // dotenv.config();
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
-
-const YOUR_API_KEY = "aodshf";
-
+const YOUR_API_KEY = "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";
 
 var txtOutput = "";
 
@@ -160,20 +158,20 @@ function queryMoment(selectedText) {
   var height = 10;
   var level = 1;
 
-  query_input.addEventListener('input', () => {
-    //query_input.style.height = 'auto';
-    //query_input.style.height = query_input.scrollHeight + 'px';
-    // query_input.style.height = query_input.scrollHeight + 'px';
-    console.log(query_input.value.length);
-    console.log(height, level);
-    if ((query_input.value.length / level) > 25) {
-        height += 10;
-        level += 1
-        query_input.style.height = height + 'px';
-        query_input.value += "\n";
-        console.log("moving");
-    }
-  });
+  // query_input.addEventListener('input', () => {
+  //   //query_input.style.height = 'auto';
+  //   //query_input.style.height = query_input.scrollHeight + 'px';
+  //   // query_input.style.height = query_input.scrollHeight + 'px';
+  //   console.log(query_input.value.length);
+  //   console.log(height, level);
+  //   if ((query_input.value.length / level) > 25) {
+  //       height += 10;
+  //       level += 1
+  //       query_input.style.height = height + 'px';
+  //       query_input.value += "\n";
+  //       console.log("moving");
+  //   }
+  // });
 
   query_input.addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
@@ -182,7 +180,10 @@ function queryMoment(selectedText) {
       console.log(selectedText);
       console.log(inputValue);
       Send(inputValue)
-      .then(handleResponse(query_input.left + 10, query_input.top))
+      .then(function() {
+        handleResponse(query_input.left + 10, query_input.top);
+        query_input.remove();
+      })
       .catch(error => {
         console.log(error);
       })
@@ -311,6 +312,7 @@ function createHighlightDotMain(initial_div, text){
       element.remove(); // FIXME: cannot read properties of null 
 
       query_button.addEventListener('click', function() {
+        console.log("creating query text");
         queryMoment(text);
       });
 
@@ -321,10 +323,6 @@ function createHighlightDotMain(initial_div, text){
       document.body.appendChild(examples_button);
 
 
-      query_button.addEventListener('click', function() {
-        console.log('removing buttons');
-        queryMoment();
-      })
       explain_button.addEventListener("click", function(event) {
         var element = document.getElementById("query_button");
         element.remove();
@@ -453,6 +451,7 @@ function createHighlightDotMain(initial_div, text){
 }
 
 function handleResponse(left, top) {
+    console.log("creating response");
     // Create text box for Chat-GPT response
     console.log("handle requests ran");
     var response_div = document.createElement("div");
@@ -462,7 +461,7 @@ function handleResponse(left, top) {
     response_div.style.left = left + "px"; // (selection_coords.left + selection_coords.width - 10) + "px";
     var initialTop = top + window.pageYOffset;
     //console.log("initial top", initialTop);
-    console.log(window.scrollY);
+    //console.log("scroll", window.scrollY);
     response_div.style.top = initialTop - window.scrollY + "px"; //initialTop - window.scrollY + "px"; 
     response_div.style.backgroundColor = "#dedede";
     response_div.style.border = "0";
