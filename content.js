@@ -178,20 +178,21 @@ function pdfPageQuery() {
       if (event.key === 'Enter') {
         // Enter key was pressed
 
+        var failed = false;
         const query_return_done = getText(pdf_input.value).then(function(text) {
           var result;
           if(text == null) {
             pdf_input.value = "Please input a valid page number!";
-            result = null;
+            failed = true;
+            return;
           } else {
             var message_to_send = cleanPageText(text);
-            result = Send(message_to_send, 1);
+            return Send(message_to_send, 1);
           }
-          return result;
         });
   
         query_return_done.then(function(result){
-          if (result == null)
+          if (failed)
             return;
           handleResponse(parseInt(pdf_input.style.left), parseInt(pdf_input.style.top) + 60);
           pdf_input.remove();
@@ -211,12 +212,6 @@ if (url.split(/[#?]/)[0].split('.').pop().trim() == "pdf") {
 
   //create pdf dot
   createHighlightDotPdf();
-
-
-  /*getText(1).then(function(text) {
-    var temp = cleanPageText(text);
-    createHighlightDotPdf(temp);
-  });*/
 
 }
 //End of PDF handling
