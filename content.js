@@ -23,7 +23,7 @@ function onUnload() {
   }
   var initial_div = document.getElementsByClassName("initial_div-class")[0];
   if (initial_div) {
-    initial_div.removeEventListener('click', clickButton);
+    //initial_div.removeEventListener('click', clickButton);
     initial_div.remove();
   }
   document.removeEventListener("mouseup", mouseUp);
@@ -247,6 +247,8 @@ var textBoxes = [];
 //   chrome.runtime.disconnect();
 // });
 
+var sel_string = "";
+var prev_sel_string = "";
 // Add an event listener to the "mouseup" event on the document object to detect when the user highlights text.
 function mouseUp() {
   chrome.runtime.sendMessage({action: "getVariable"}, function(response) {
@@ -260,7 +262,10 @@ function mouseUp() {
     
     if (sel_string && selection.rangeCount > 0 && !(sel_string === prev_sel_string)) { // Check if text is highlighted
       createHighlightDot(selection);
-    }}})};
+    }}
+  })
+}
+
 document.addEventListener("mouseup", mouseUp);
 
 function scrollEvent() {
