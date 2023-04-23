@@ -42,6 +42,45 @@ function queryMoment() {
   if (examples) {
     examples.remove();
   }
+
+  const query_button = document.getElementById("query_button");
+  const buttonRect = query_button.getBoundingClientRect();
+  const parentElement = query_button.parentNode;
+
+  const query_input = document.createElement('input');
+  query_input.type = 'text';
+  query_input.setAttribute("id", "query_input");
+  query_input.classList.add('query_input-class');
+  //query_input.textContent = "What's your question...";
+  query_input.value = "What's your question....";
+  query_input.style.color = "#999"; 
+
+  query_input.addEventListener('focus', function() {
+    console.log(this.value);
+    if (this.value=='What\'s your question....') {
+      this.value='';
+    }
+  });
+  query_input.addEventListener('blur', function() {
+    if (this.value=='') {
+      this.value='What\'s your question....';
+  }
+  });  
+
+  query_input.style.position = "fixed";
+  query_input.style.left = buttonRect.right + 10 + "px";
+  var initialTop = buttonRect.top + window.pageYOffset - 10; 
+  console.log("initial top", initialTop);
+  query_input.style.top = initialTop - window.scrollY + 13 + "px"; 
+  //query_input.style.backgroundColor = "transparent";
+  //query_input.style.border = "0";
+  query_input.style.color = "#0d0c0c";
+  query_input.style.textAlign = "left";
+  query_input.style.fontSize = "16px";
+  query_input.style.opacity = "0.8";
+  query_input.style.cursor = "pointer";
+
+  parentElement.insertBefore(query_input, query_button.nextSibling);
 }
 
 
@@ -87,8 +126,11 @@ function createHighlightDot(selection){
       explain_button.setAttribute("id", "explain_button");
       explain_button.textContent = "E";
       explain_button.style.position = "fixed";
+
+      var initialTopExplain = (parseInt(initial_div.style.top) - 30) + window.pageYOffset; 
+
       explain_button.style.left = (parseInt(initial_div.style.left) + initial_div.offsetWidth + 10) + "px";
-      explain_button.style.top = (parseInt(initial_div.style.top) - 30) + "px";
+      explain_button.style.top =  initialTopExplain - window.scrollY + "px";
       explain_button.style.border = "1px solid black";
       explain_button.style.backgroundColor = "black";
       explain_button.style.color = "white";
@@ -111,7 +153,10 @@ function createHighlightDot(selection){
       query_button.textContent = "?";
       query_button.style.position = "fixed";
       query_button.style.left = (parseInt(initial_div.style.left) + initial_div.offsetWidth + 10) + "px";
-      query_button.style.top = initial_div.style.top;
+
+      var initialTopQuery = (parseInt(initial_div.style.top)) + window.pageYOffset; //initial_div.style.top + window.pageYOffset; 
+
+      query_button.style.top = initialTopQuery - window.scrollY + "px";//initialTopQuery - window.scrollY + "px";
       query_button.style.backgroundColor = "black";
       query_button.style.color = "white";
       query_button.style.border = "1px solid black";
@@ -134,7 +179,10 @@ function createHighlightDot(selection){
       examples_button.textContent = "C";
       examples_button.style.position = "fixed";
       examples_button.style.left = (parseInt(initial_div.style.left) + initial_div.offsetWidth + 10) + "px";
-      examples_button.style.top = (parseInt(initial_div.style.top) + 30) + "px";
+
+      var initialTopExamples = (parseInt(initial_div.style.top) + 30) + window.pageYOffset; 
+
+      examples_button.style.top = initialTopExamples - window.scrollY + "px";
       examples_button.style.backgroundColor = "black";
       examples_button.style.color = "white";
       examples_button.style.border = "1px solid black";
@@ -151,8 +199,17 @@ function createHighlightDot(selection){
         event.target.style.transform = "scale(1)";
       });
 
+      textBoxes.push([explain_button, initialTopExplain]);
+      textBoxes.push([query_button, initialTopQuery]);
+      textBoxes.push([examples_button, initialTopExamples]);
+
       var element = document.getElementById("highlight_button");
-      element.remove();
+      element.remove(); // FIXME: cannot read properties of null 
+
+      query_button.addEventListener('click', function() {
+        console.log('removing buttons');
+        queryMoment();
+      });
 
       // add new button to document
       console.log('adding buttons');
@@ -160,14 +217,13 @@ function createHighlightDot(selection){
       document.body.appendChild(query_button);
       document.body.appendChild(examples_button);
 
-      query_button.addEventListener('click', function() {
-        console.log('removing buttons');
-        queryMoment();
-      });
+
+
     });
     document.body.appendChild(initial_div);
 
     textBoxes.push([initial_div, initialTop]);
+
 
     // Add event listener to text box to remove it when clicked
     initial_div.addEventListener("click", function() {
