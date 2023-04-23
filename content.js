@@ -84,6 +84,14 @@ function createHighlightDot(selection){
       explain_button.style.fontSize = "16px";
       explain_button.style.cursor = "pointer";
       explain_button.style.borderRadius = "50%";
+
+      explain_button.style.transition = "transform .5s ease-in-out";
+      explain_button.addEventListener("mouseover", function(event) {
+        event.target.style.transform = "scale(1.5)";
+      });
+      explain_button.addEventListener("mouseout", function(event) {
+        event.target.style.transform = "scale(1)";
+      });
       
       var query_button = document.createElement("button");
       query_button.classList.add('query_button-class');
@@ -99,6 +107,14 @@ function createHighlightDot(selection){
       query_button.style.cursor = "pointer";
       query_button.style.borderRadius = "50%";
 
+      query_button.style.transition = "transform .5s ease-in-out";
+      query_button.addEventListener("mouseover", function(event) {
+        event.target.style.transform = "scale(1.5)";
+      });
+      query_button.addEventListener("mouseout", function(event) {
+        event.target.style.transform = "scale(1)";
+      });
+
       var examples_button = document.createElement("button");
       examples_button.classList.add('examples_button-class');
       examples_button.textContent = "C";
@@ -112,6 +128,14 @@ function createHighlightDot(selection){
       examples_button.style.fontSize = "16px";
       examples_button.style.cursor = "pointer";
       examples_button.style.borderRadius = "50%";
+
+      examples_button.style.transition = "transform .5s ease-in-out";
+      examples_button.addEventListener("mouseover", function(event) {
+        event.target.style.transform = "scale(1.5)";
+      });
+      examples_button.addEventListener("mouseout", function(event) {
+        event.target.style.transform = "scale(1)";
+      });
 
       var element = document.getElementById("highlight_button");
       element.remove();
