@@ -189,7 +189,7 @@ function Send(in_message) {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + "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"
+        "Authorization": "Bearer " + Your_key
       },
       body: JSON.stringify(data)
     })
