@@ -5,10 +5,12 @@
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
 
-const YOUR_API_KEY = "aodshf";
+const YOUR_API_KEY = "huasd";
 
 
 var txtOutput = "";
+
+var query_return_done;
 
 var image = document.createElement("img");
 
@@ -194,7 +196,6 @@ function onUnload() {
 window.addEventListener('beforeunload', onUnload);
 
 function queryMoment(selectedText) {
-
   var explanation = document.getElementById("explain_button");
   if (explanation) {
     explanation.remove();
@@ -277,11 +278,13 @@ function queryMoment(selectedText) {
       const inputValue = query_input.value;
       console.log(selectedText);
       console.log(inputValue);
-      Send(inputValue)
-      .then(handleResponse(query_input.left + 10, query_input.top))
-      .catch(error => {
-        console.log(error);
-      })
+      var message_to_send = "I have a question about the following: " + selectedText + "Please tell me: " + inputValue;
+      console.log(message_to_send);
+      query_return_done = Send(message_to_send, 3);
+
+      query_return_done.then(function(){
+      handleResponse(parseInt(query_input.style.left), parseInt(query_input.style.top) + 60)
+        });
     }
   });
 
@@ -607,17 +610,21 @@ function handleResponse(left, top) {
 }
 
 // Function to make an HTTP POST request to the ChatGPT API
-function Send(in_message, examples) {
+function Send(in_message, type) {
+
   var sModel = "gpt-3.5-turbo";// "text-davinci-003";
   var iMaxTokens = 100;
   var sUserId = "1";
   var dTemperature = 0.5;    
   var message_list = [];
-  if(examples){
+  if(type === 0){
     message_list = [{'role':'user', 'content':"Please give me 3 examples of the following: " + in_message}];
   }
-  else{
+  else if(type === 1){
     message_list = [{'role':'user', 'content':"Please explain this to me in simple terms: " + in_message + ". I don't completely understand"}];
+  }
+  else{
+    message_list = [{'role':'user', 'content':in_message}];
   }
   var data = {
       model: sModel,
