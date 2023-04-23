@@ -6,7 +6,7 @@ const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
 
 
-const YOUR_API_KEY = "afds";
+const YOUR_API_KEY = "adsf";
 
 var txtOutput = "";
 
@@ -322,7 +322,7 @@ function queryMoment(selectedText) {
       load.src = chrome.runtime.getURL("./my_loading.gif");
       load.style.position = "fixed";
       load.style.opacity = "1";
-      load.style.left = (parseInt(query_input.style.left) + 100 ) + "px";
+      load.style.left = (parseInt(query_input.style.left) + 130 ) + "px";
       load.style.top = (parseInt(query_input.style.top) - 20) + "px";
       load.style.maxWidth = "20px";
       load.style.maxHeight = "20px";
@@ -337,6 +337,7 @@ function queryMoment(selectedText) {
       query_return_done.then(function(){
         load.style.opacity = "0";
         handleResponse(parseInt(query_input.style.left), parseInt(query_input.style.top) + 60);
+        query_input.style.left = 999999 + "px";
         });
     }
   });
