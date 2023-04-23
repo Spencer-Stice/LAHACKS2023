@@ -46,7 +46,8 @@ function getText(pageNumber) {
   const loadingTask = pdfjsLib.getDocument(url);
   const loadingPage = loadingTask.promise.then(function(pdf) {
     numPages = pdf.numPages;
-    if (pageNumber > numPages || pageNumber < 1)
+    var pageNumberInt = parseInt(pageNumber);
+    if (!Number.isInteger(pageNumberInt) || pageNumberInt > numPages || pageNumberInt < 1)
       return null;
     var page = pdf.getPage(parseInt(pageNumber));
     return page;
