@@ -4,7 +4,7 @@
 // dotenv.config();
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
-const YOUR_API_KEY = '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';
+const YOUR_API_KEY = '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';
 
 var txtOutput = "";
 
@@ -28,10 +28,21 @@ function onUnload() {
   }
   document.removeEventListener("mouseup", mouseUp);
   window.removeEventListener('scroll', scrollEvent);
-  document.removeEventListener('selectionchange', selectionChange);
 }
 
 window.addEventListener('beforeunload', onUnload);
+
+function queryMoment() {
+  console.log('query');
+  var explanation = document.getElementById("explain_button");
+  if (explanation) {
+    explanation.remove();
+  }
+  var examples = document.getElementById("examples_button");
+  if (examples) {
+    examples.remove();
+  }
+}
 
 
 function createHighlightDot(selection){
@@ -45,7 +56,7 @@ function createHighlightDot(selection){
     initial_div.classList.add('initial_div-class');
     initial_div.textContent = "⬤";
     initial_div.style.position = "fixed";
-    initial_div.style.left = (selection_coords.left + selection_coords.width - 10) + "px";
+    initial_div.style.left = (selection_coords.left + selection_coords.width - 13) + "px";
     var initialTop = selection_coords.top + window.pageYOffset - 18; //10 is to compensate for the font-size
     console.log("initial top", initialTop);
     initial_div.style.top = initialTop - window.scrollY + "px"; //(event.pageY - window.scrollY + 10) + "px";
@@ -73,6 +84,7 @@ function createHighlightDot(selection){
       // create new button
       var explain_button = document.createElement("button");
       explain_button.classList.add('explain_button-class');
+      explain_button.setAttribute("id", "explain_button");
       explain_button.textContent = "E";
       explain_button.style.position = "fixed";
       explain_button.style.left = (parseInt(initial_div.style.left) + initial_div.offsetWidth + 10) + "px";
@@ -95,6 +107,7 @@ function createHighlightDot(selection){
       
       var query_button = document.createElement("button");
       query_button.classList.add('query_button-class');
+      query_button.setAttribute("id", "query_button");
       query_button.textContent = "?";
       query_button.style.position = "fixed";
       query_button.style.left = (parseInt(initial_div.style.left) + initial_div.offsetWidth + 10) + "px";
@@ -117,6 +130,7 @@ function createHighlightDot(selection){
 
       var examples_button = document.createElement("button");
       examples_button.classList.add('examples_button-class');
+      examples_button.setAttribute("id", "examples_button");
       examples_button.textContent = "C";
       examples_button.style.position = "fixed";
       examples_button.style.left = (parseInt(initial_div.style.left) + initial_div.offsetWidth + 10) + "px";
@@ -141,9 +155,15 @@ function createHighlightDot(selection){
       element.remove();
 
       // add new button to document
+      console.log('adding buttons');
       document.body.appendChild(explain_button);
       document.body.appendChild(query_button);
       document.body.appendChild(examples_button);
+
+      query_button.addEventListener('click', function() {
+        console.log('removing buttons');
+        queryMoment();
+      });
     });
     document.body.appendChild(initial_div);
 
@@ -310,10 +330,6 @@ function scrollEvent() {
 }
 
 window.addEventListener('scroll', scrollEvent);
-
-
-
-document.addEventListener('selectionchange', selectionChange);
 
 
 
