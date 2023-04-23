@@ -56,17 +56,20 @@ function createHighlightDot(selection){
     initial_div.style.fontSize = "16px";
     initial_div.style.opacity = "0.8";
     initial_div.style.cursor = "pointer";
-    initial_div.style.transition = "color .5s ease-in-out";
-    
+    initial_div.style.transition = "color .5s ease-in-out, transform .5s ease-in-out";
+
     initial_div.addEventListener("mouseover", function(event) {
       event.target.style.color = "#41d95f";
+      event.target.style.transform = "scale(3)";
     });
     
     initial_div.addEventListener("mouseout", function(event) {
       event.target.style.color = "#d94141";
+      event.target.style.transform = "scale(1)";
     });
 
     initial_div.addEventListener("transitionend", function() {
+
       // create new button
       var explain_button = document.createElement("button");
       explain_button.classList.add('explain_button-class');
@@ -109,6 +112,9 @@ function createHighlightDot(selection){
       examples_button.style.fontSize = "16px";
       examples_button.style.cursor = "pointer";
       examples_button.style.borderRadius = "50%";
+
+      var element = document.getElementById("highlight_button");
+      element.remove();
 
       // add new button to document
       document.body.appendChild(explain_button);
