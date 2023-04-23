@@ -6,7 +6,7 @@ const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
 
 
-const YOUR_API_KEY = "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";
+const YOUR_API_KEY = "asdf";
 
 var txtOutput = "";
 
@@ -46,13 +46,20 @@ const url = window.location.href;
 
 //Gets the text from a pdf for an input page number
 //Returns a promise, with text = a raw array of the pdf lines
+
+var numPages = -1
 function getText(pageNumber) {
   const loadingTask = pdfjsLib.getDocument(url);
   const loadingPage = loadingTask.promise.then(function(pdf) {
+    numPages = pdf.numPages;
+    if (pageNumber > numPages || pageNumber < 1)
+      return null;
     var page = pdf.getPage(parseInt(pageNumber));
     return page;
   });
   const loadingText = loadingPage.then(function(page) {
+    if (page == null)
+      return null;
     text = page.getTextContent();
     return text;
   });
@@ -135,57 +142,65 @@ function stylizePdfPageQuery(box) {
 
 //creates a textbox to input which page the user would like explained
 function pdfPageQuery() {
-    const query_input = document.createElement('input');
-    query_input.type = 'text';
-    query_input.setAttribute("id", "query_input");
-    query_input.classList.add('query_input-class');
-    query_input.value = "Which page would you like to know more about?";
-    query_input.style.color = "#999"; 
+    const pdf_input = document.createElement('input');
+    pdf_input.type = 'text';
+    pdf_input.setAttribute("id", "pdf_input");
+    pdf_input.classList.add('pdf_input-class');
+    pdf_input.value = "Which page would you like to know more about?";
+    pdf_input.style.color = "#999"; 
   
-    query_input.addEventListener('focus', function() {
-      console.log(this.value);
-      if (this.value=='Which page would you like to know more about?') {
-        this.value='';
-      }
+    pdf_input.addEventListener('focus', function() {
+      this.value='';
     });
-    query_input.addEventListener('blur', function() {
-      if (this.value=='') {
+    pdf_input.addEventListener('blur', function() {
+      if (this.value=='')
         this.value='Which page would you like to know more about?';
-    }
-    });  
-  
-    stylizePdfPageQuery(query_input);
+    });
+    pdf_input.addEventListener('click', function() {
+      this.value='';
+    });
+
+    stylizePdfPageQuery(pdf_input);
   
     var height = 10;
     var level = 1;
   
-    query_input.addEventListener('input', () => {
-      if ((query_input.value.length / level) > 25) {
+    pdf_input.addEventListener('input', () => {
+      if ((pdf_input.value.length / level) > 25) {
           height += 10;
           level += 1
-          query_input.style.height = height + 'px';
-          query_input.value += "\n";
+          pdf_input.style.height = height + 'px';
+          pdf_input.value += "\n";
       }
     });
 
-    query_input.addEventListener('keydown', function(event) {
+    pdf_input.addEventListener('keydown', function(event) {
       if (event.key === 'Enter') {
         // Enter key was pressed
 
-        const query_return_done = getText(query_input.value).then(function(text) {
-          var message_to_send = cleanPageText(text);
-          return Send(message_to_send, 1);
+        const query_return_done = getText(pdf_input.value).then(function(text) {
+          var result;
+          if(text == null) {
+            pdf_input.value = "Please input a valid page number!";
+            result = null;
+          } else {
+            var message_to_send = cleanPageText(text);
+            result = Send(message_to_send, 1);
+          }
+          return result;
         });
   
-        query_return_done.then(function(){
-          handleResponse(parseInt(query_input.style.left), parseInt(query_input.style.top) + 60);
-          query_input.remove();
+        query_return_done.then(function(result){
+          if (result == null)
+            return;
+          handleResponse(parseInt(pdf_input.style.left), parseInt(pdf_input.style.top) + 60);
+          pdf_input.remove();
           createHighlightDotPdf();
         });
       }
     });
 
-    document.body.appendChild(query_input);
+    document.body.appendChild(pdf_input);
 
 }
 
@@ -373,7 +388,7 @@ function stylizeInitialDiv(initial_div) {
   
   initial_div.style.backgroundColor = "transparent";
   initial_div.style.border = "0";
-  initial_div.style.color = "#d94141";
+  initial_div.style.color = "#5cdb6d";
   initial_div.style.textAlign = "center";
   initial_div.style.fontSize = "16px";
   initial_div.style.opacity = "0.8";
@@ -408,12 +423,12 @@ function createHighlightDotMain(initial_div, text){
     stylizeInitialDiv(initial_div);
     
     initial_div.addEventListener("mouseover", function(event) {
-      event.target.style.color = "#41d95f";
+      event.target.style.color = "#2a2dde";
       event.target.style.transform = "scale(3)";
     });
     
     initial_div.addEventListener("mouseout", function(event) {
-      event.target.style.color = "#d94141";
+      event.target.style.color = "#5cdb6d";
       event.target.style.transform = "scale(1)";
     });
 
@@ -483,7 +498,7 @@ function createHighlightDotMain(initial_div, text){
         image.src = chrome.runtime.getURL("./my_loading.gif");
         image.style.position = "fixed";
         image.style.opacity = "1";
-        image.style.left = (parseInt(explain_button.style.left + 5) ) + "px";
+        image.style.left = (parseInt(explain_button.style.left) + 2.5 ) + "px";
         image.style.top = (parseInt(explain_button.style.top) + 30) + "px";
         image.style.maxWidth = "20px";
         image.style.maxHeight = "20px";
@@ -515,7 +530,7 @@ function createHighlightDotMain(initial_div, text){
         image.src = chrome.runtime.getURL("./my_loading.gif");
         image.style.position = "fixed";
         image.style.opacity = "1";
-        image.style.left = (parseInt(examples_button.style.left + 5) ) + "px";
+        image.style.left = (parseInt(examples_button.style.left) + 2.5 ) + "px";
         image.style.top = (parseInt(examples_button.style.top) + 30) + "px";
         image.style.maxWidth = "20px";
         image.style.maxHeight = "20px";
