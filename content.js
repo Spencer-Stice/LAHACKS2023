@@ -6,7 +6,7 @@ const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
 
 
-const YOUR_API_KEY = "adsf";
+const YOUR_API_KEY = "asdf";
 
 var txtOutput = "";
 
@@ -367,7 +367,7 @@ function stylizeInitialDiv(initial_div) {
   
   initial_div.style.backgroundColor = "transparent";
   initial_div.style.border = "0";
-  initial_div.style.color = "#d94141";
+  initial_div.style.color = "#5cdb6d";
   initial_div.style.textAlign = "center";
   initial_div.style.fontSize = "16px";
   initial_div.style.opacity = "0.8";
@@ -402,12 +402,12 @@ function createHighlightDotMain(initial_div, text){
     stylizeInitialDiv(initial_div);
     
     initial_div.addEventListener("mouseover", function(event) {
-      event.target.style.color = "#41d95f";
+      event.target.style.color = "#2a2dde";
       event.target.style.transform = "scale(3)";
     });
     
     initial_div.addEventListener("mouseout", function(event) {
-      event.target.style.color = "#d94141";
+      event.target.style.color = "#5cdb6d";
       event.target.style.transform = "scale(1)";
     });
 
@@ -477,7 +477,7 @@ function createHighlightDotMain(initial_div, text){
         image.src = chrome.runtime.getURL("./my_loading.gif");
         image.style.position = "fixed";
         image.style.opacity = "1";
-        image.style.left = (parseInt(explain_button.style.left + 5) ) + "px";
+        image.style.left = (parseInt(explain_button.style.left) + 2.5 ) + "px";
         image.style.top = (parseInt(explain_button.style.top) + 30) + "px";
         image.style.maxWidth = "20px";
         image.style.maxHeight = "20px";
@@ -509,7 +509,7 @@ function createHighlightDotMain(initial_div, text){
         image.src = chrome.runtime.getURL("./my_loading.gif");
         image.style.position = "fixed";
         image.style.opacity = "1";
-        image.style.left = (parseInt(examples_button.style.left + 5) ) + "px";
+        image.style.left = (parseInt(examples_button.style.left) + 2.5 ) + "px";
         image.style.top = (parseInt(examples_button.style.top) + 30) + "px";
         image.style.maxWidth = "20px";
         image.style.maxHeight = "20px";
