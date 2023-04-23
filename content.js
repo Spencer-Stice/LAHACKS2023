@@ -4,7 +4,9 @@
 // dotenv.config();
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
-const YOUR_API_KEY = "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";
+
+
+const YOUR_API_KEY = "afds";
 
 var txtOutput = "";
 
