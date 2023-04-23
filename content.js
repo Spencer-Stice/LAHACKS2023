@@ -35,6 +35,10 @@ document.addEventListener("selectionchange", function() {
 
 
 //PDF helper functions
+const url = window.location.href;
+
+//Gets the text from a pdf for an input page number
+//Returns a promise, with text = a raw array of the pdf lines
 function getText(pageNumber) {
   const loadingTask = pdfjsLib.getDocument(url);
   const loadingPage = loadingTask.promise.then(function(pdf) {
@@ -48,6 +52,8 @@ function getText(pageNumber) {
   return loadingText;
 }
 
+//Cleans up the raw array of pdf lines
+//Returns a string
 function cleanPageText(text) {
   var pageText = "";
   var linesArray = text.items;
@@ -57,16 +63,106 @@ function cleanPageText(text) {
   return pageText;
 }
 
-const url = window.location.href;
+//creates pdf menu dot
+function createHighlightDotPdf() {
+  var initial_div = document.createElement("button");
+  initial_div.style.left = 90 + "%";
+  initial_div.style.top = 10 + "%"; 
+  
+  stylizeInitialDiv(initial_div);
+  initial_div.setAttribute("id", "pdf_menu_button");
+
+  initial_div.addEventListener("mouseover", function(event) {
+    event.target.style.color = "#41d95f";
+    event.target.style.transform = "scale(3)";
+  });
+  
+  initial_div.addEventListener("mouseout", function(event) {
+    event.target.style.color = "#d94141";
+    event.target.style.transform = "scale(1)";
+  });
+
+  initial_div.addEventListener("transitionend", function() {
+    if (initial_div.style.transform === "scale(3)")
+      pdfPageQuery();
+      initial_div.remove();
+  });
+
+  document.body.appendChild(initial_div);
+}
+
+function stylizePdfPageQuery(box) {
+  box.style.position = "fixed";
+  box.style.left = 80 + "%";
+  box.style.top = 10 + "%"; 
+  box.style.color = "#0d0c0c";
+  box.style.textAlign = "left";
+  box.style.fontSize = "9px";
+  box.style.opacity = "1";
+  box.style.cursor = "pointer";
+  box.style.resize = "none";
+  box.style.overflow = "hidden";
+  box.style.borderRadius = "15px";
+  box.style.padding = "15px";
+  box.style.maxHeight = "200px";
+  box.style.overflowY = "scroll";
+  box.style.width = "200px";
+  box.style.height = "10px";
+}
+
+//creates a textbox to input which page the user would like explained
+function pdfPageQuery() {
+  
+    const query_input = document.createElement('input');
+    query_input.type = 'text';
+    query_input.setAttribute("id", "query_input");
+    query_input.classList.add('query_input-class');
+    query_input.value = "Which page would you like to know more about?";
+    query_input.style.color = "#999"; 
+  
+    query_input.addEventListener('focus', function() {
+      console.log(this.value);
+      if (this.value=='Which page would you like to know more about?') {
+        this.value='';
+      }
+    });
+    query_input.addEventListener('blur', function() {
+      if (this.value=='') {
+        this.value='Which page would you like to know more about?';
+    }
+    });  
+  
+    stylizePdfPageQuery(query_input);
+  
+    var height = 10;
+    var level = 1;
+  
+    query_input.addEventListener('input', () => {
+      if ((query_input.value.length / level) > 25) {
+          height += 10;
+          level += 1
+          query_input.style.height = height + 'px';
+          query_input.value += "\n";
+      }
+    });
+
+    document.body.appendChild(query_input);
+
+}
+
 //Check for PDFs:
 if (url.split(/[#?]/)[0].split('.').pop().trim() == "pdf") {
   //initialize pdf object
   var pdfjsLib = window['pdfjs-dist/build/pdf'];
 
-  getText(1).then(function(text) {
+  //create pdf dot
+  createHighlightDotPdf();
+
+
+  /*getText(1).then(function(text) {
     var temp = cleanPageText(text);
     createHighlightDotPdf(temp);
-  });
+  });*/
 
 }
 //End of PDF handling
