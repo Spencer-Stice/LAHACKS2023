@@ -12,12 +12,14 @@ var txtOutput = "";
 // });
 
 function createHighlightDot(selection){
+  console.log("create highlight ran");
   var selection_coords = selection.getRangeAt(0).getBoundingClientRect();
   var text = selection.toString();
   console.log(text);
   if (text){
     console.log("Text highlighted: " + text);
     var initial_div = document.createElement("button");
+    initial_div.setAttribute("id", "highlight_button");
     initial_div.classList.add('initial_div-class');
     initial_div.textContent = "⬤";
     initial_div.style.position = "fixed";
@@ -37,7 +39,11 @@ function createHighlightDot(selection){
 
     // Add event listener to text box to remove it when clicked
     initial_div.addEventListener("click", function() {
-      initial_div.remove(); 
+      var element = document.getElementById("highlight_button");
+      console.log(element);
+      element.remove();
+
+      console.log("removed");
 
       Send(text)
       .then(() => {
@@ -100,7 +106,7 @@ function Send(in_message) {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + YOUR_KEy
+        "Authorization": "Bearer " + "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"
       },
       body: JSON.stringify(data)
     })
@@ -134,11 +140,16 @@ function Send(in_message) {
 var textBoxes = []; 
 
 // Add an event listener to the "mouseup" event on the document object to detect when the user highlights text.
+var sel_string = "";
+var prev_sel_string = "";
 document.addEventListener("mouseup", function(event) {
-
+    if (sel_string != ""){
+      prev_sel_string = sel_string;
+    }
     var selection = window.getSelection();
-
-    if (selection.rangeCount > 0) { // Check if text is highlighted
+    sel_string = selection.toString();
+    
+    if (sel_string && selection.rangeCount > 0 && !(sel_string === prev_sel_string)) { // Check if text is highlighted
       createHighlightDot(selection);
     }
   }
