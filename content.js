@@ -1,9 +1,7 @@
 // import dotenv from 'dotenv';
 
-
 // dotenv.config();
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
-
 
 var txtOutput = "";
 
@@ -12,77 +10,76 @@ var txtOutput = "";
 // });
 
 function createHighlightDot(selection){
-  console.log("create highlight ran");
   var selection_coords = selection.getRangeAt(0).getBoundingClientRect();
   var text = selection.toString();
-  console.log(text);
+
   if (text){
     console.log("Text highlighted: " + text);
-    var initial_div = document.createElement("button");
-    initial_div.setAttribute("id", "highlight_button");
-    initial_div.classList.add('initial_div-class');
-    initial_div.textContent = "⬤";
-    initial_div.style.position = "fixed";
-    initial_div.style.left = (selection_coords.left + selection_coords.width - 10) + "px";
-    var initialTop = selection_coords.top + window.pageYOffset - 10; //10 is to compensate for the font-size
-    console.log("initial top", initialTop);
-    initial_div.style.top = initialTop - window.scrollY + "px"; //(event.pageY - window.scrollY + 10) + "px";
-    initial_div.style.backgroundColor = "transparent";
-    initial_div.style.border = "0";
-    initial_div.style.color = "#fcca03";
-    initial_div.style.textAlign = "center";
-    initial_div.style.fontSize = "10px";
-    
-    document.body.appendChild(initial_div);
 
-    textBoxes.push([initial_div, initialTop]);
+    // Get URLs for the HTML and CSS files
+    const startButtonsHtmlUrl = chrome.runtime.getURL("start_buttons.html");
+    const startButtonsCssUrl = chrome.runtime.getURL("start_buttons.css");
+    // Fetch the HTML contents and inject into the current webpage
+    fetch(startButtonsHtmlUrl)
+    .then(response => response.text())
+    .then(data => {
+      const div = document.createElement("div");
+      div.innerHTML = data;
+      document.body.appendChild(div);
 
-    // Add event listener to text box to remove it when clicked
-    initial_div.addEventListener("click", function() {
-      var element = document.getElementById("highlight_button");
-      console.log(element);
-      element.remove();
+      // Apply CSS styles to the button
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.type = "text/css";
+      link.href = startButtonsCssUrl;
+      document.head.appendChild(link);
 
-      console.log("removed");
+      const initial_dot = document.getElementById("initial_dot");
+      var initialTop = selection_coords.top + window.pageYOffset - 10; //10 is to compensate for the font-size
+      initial_dot.style.top = initialTop - window.scrollY + "px";
+      initial_dot.style.left = (selection_coords.left + selection_coords.width - 10) + "px";
+      initial_dot.classList.add('initial_dot');
 
-      Send(text)
-      .then(() => {
-        // Create text box for Chat-GPT response
-        var response_div = document.createElement("div");
-        response_div.classList.add('response_div-class');
-        response_div.innerHTML = txtOutput; //"What would you like to ask about this?";
-        response_div.style.position = "fixed";
-        response_div.style.left = (selection_coords.left + selection_coords.width - 10) + "px";
-        var initialTop = selection_coords.top + window.pageYOffset - 10;
-        //console.log("initial top", initialTop);
-        response_div.style.top = initialTop - window.scrollY + "px"; //(event.pageY - window.scrollY + 10) + "px";
-        response_div.style.backgroundColor = "#dedede";
-        response_div.style.border = "0";
-        response_div.style.borderRadius = "15px";
-        response_div.style.fontSize = "14px";
-        response_div.style.padding = "15px";
-        response_div.style.color = "#000000";
-        response_div.style.maxWidth = "300px";
-        response_div.style.maxHeight = "200px";
-        response_div.style.overflowY = "scroll";
-        response_div.style.scrollbarWidth = 'thin';
-        response_div.style.scrollbarColor = 'red yellow'; // set the colors
-        response_div.style.scrollbarRadius = '10px'; // set the corner radius
-    
-        // Append text box to document
-        document.body.appendChild(response_div);
+      textBoxes.push([initial_dot, initialTop]);
 
-        textBoxes.push([response_div, initialTop]);
-    
-        // Add event listener to text box to remove it when clicked
-        response_div.addEventListener("click", function() {
-          response_div.remove();
-        });  
-      })
-      .catch(error => {
-        console.log(error);
-      })
-    }); 
+      initial_dot.addEventListener("click", function() {
+        Send(text)
+        .then(() => {
+          // Get URLs for the HTML and CSS files
+          const responseHtmlUrl = chrome.runtime.getURL("response.html");
+          const responseCssUrl = chrome.runtime.getURL("response.css");
+      
+          // Fetch the HTML contents and inject into the current webpage
+          fetch(responseHtmlUrl)
+          .then(response => response.text())
+          .then(data => {
+            const div = document.createElement("div");
+            div.innerHTML = data;
+            document.body.appendChild(div);
+
+            const response_window = document.getElementById("response_window");
+            response_window.innerHTML = txtOutput;
+            var initialTop = selection_coords.top + window.pageYOffset - 10; //10 is to compensate for the font-size
+            response_window.style.top = initialTop - window.scrollY + "px";
+            response_window.style.left = (selection_coords.left + selection_coords.width - 10) + "px";
+            response_window.classList.add('response_window');
+
+            // Apply CSS styles to the div
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.type = "text/css";
+            link.href = responseCssUrl;
+            document.head.appendChild(link);
+
+            textBoxes.push([response_window, initialTop]);
+          });
+          
+        })
+        .catch(error => {
+          console.log(error);
+        })
+      });
+    });
   }
 }
 
@@ -106,7 +103,7 @@ function Send(in_message) {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + "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"
+        "Authorization": "Bearer " + "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"
       },
       body: JSON.stringify(data)
     })
@@ -148,40 +145,40 @@ document.addEventListener("mouseup", function(event) {
     }
     var selection = window.getSelection();
     sel_string = selection.toString();
-    
+
     if (sel_string && selection.rangeCount > 0 && !(sel_string === prev_sel_string)) { // Check if text is highlighted
       createHighlightDot(selection);
     }
   }
-  );
+);
 
-  window.addEventListener('scroll', function() {
-    console.log(textBoxes.length);
-    for (let i = 0; i < textBoxes.length; i++) {
-      var scrollTop = window.scrollY;
-      var newTop = textBoxes[i][1] - scrollTop;
-      //console.log("now initial top is ", textBoxes[i][1]);
-      textBoxes[i][0].style.top = newTop + 'px';
-    }
-  });
+window.addEventListener('scroll', function() {
+  console.log(textBoxes.length);
+  for (let i = 0; i < textBoxes.length; i++) {
+    var scrollTop = window.scrollY;
+    var newTop = textBoxes[i][1] - scrollTop;
+    //console.log("now initial top is ", textBoxes[i][1]);
+    textBoxes[i][0].style.top = newTop + 'px';
+  }
+});
 
-  document.addEventListener('selectionchange', function() {
-    const buttons = document.querySelectorAll('.initial_div-class');
-    const divs = document.querySelectorAll('.response_div-class');
+document.addEventListener('selectionchange', function() {
+  const buttons = document.querySelectorAll('.initial_dot');
+  const divs = document.querySelectorAll('.response_window');
 
-    // Check if any buttons were found
-    if (buttons.length > 0) {
-      // Loop through the collection of buttons and remove each button from the DOM
-      buttons.forEach((button) => {
-        button.remove();
-      });
-    } 
-    if (divs.length > 0) {
-      divs.forEach((div) => {
-        div.remove();
-      });
-    }
-  });
+  // Check if any buttons were found
+  if (buttons.length > 0) {
+    // Loop through the collection of buttons and remove each button from the DOM
+    buttons.forEach((button) => {
+      button.remove();
+    });
+  } 
+  if (divs.length > 0) {
+    divs.forEach((div) => {
+      div.remove();
+    });
+  }
+});
   /*
   // This function is executed when the user clicks on the extension's browser action button.
   function onBrowserActionClicked(tab) {

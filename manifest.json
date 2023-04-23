@@ -3,7 +3,7 @@
   "name": "SmartMark",
   "version": "1.0",
   "description": "An AI-powered smart research tool",
-  "permissions": ["activeTab", "tabs", "tabGroups", "background", "<all_urls>"],
+  "permissions": ["activeTab", "tabs", "tabGroups", "background", "<all_urls>", "http://*/*", "https://*/*", "file:///*/*"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -11,8 +11,14 @@
       "type": "module"
     }
   ],
+  "web_accessible_resources": [
+    "start_buttons.html",
+    "start_buttons.css",
+    "response.html",
+    "response.css"
+  ],
   "background": {
-    "page": "back.html"
+    "scripts": ["background.js"]
   },
   "browser_action": {
     "default_popup": "popup.html",

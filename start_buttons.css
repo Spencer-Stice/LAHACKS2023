@@ -1,0 +1,10 @@
+.initial_button{
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    background-color: transparent;
+    border: 0px;
+    color: #fcca03;
+    text-align: center;
+    font-size: 10px;
+}
