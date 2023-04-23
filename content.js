@@ -4,7 +4,7 @@
 // dotenv.config();
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
-const YOUR_API_KEY;
+const YOUR_API_KEY = "akuwgfkagwfk";
 
 var txtOutput = "";
 
@@ -61,7 +61,7 @@ if (url.split(/[#?]/)[0].split('.').pop().trim() == "pdf") {
 
   getText(1).then(function(text) {
     var temp = cleanPageText(text);
-    console.log(temp);
+    createHighlightDotPdf(temp);
   });
 
 }
@@ -144,22 +144,38 @@ function queryMoment() {
   parentElement.insertBefore(query_input, query_button.nextSibling);
 }
 
+function createHighlightDotPdf(text) {
+  var initial_div = document.createElement("button");
+  initial_div.style.left = 80 + "%";
+  initial_div.style.top = 10 + "%";
 
-function createHighlightDot(selection){
+  createHighlightDotMain(initial_div, text);
+}
+
+function createHighlightDot(selection) {
+  var initial_div = document.createElement("button");
+
   var selection_coords = selection.getRangeAt(0).getBoundingClientRect();
+  initial_div.style.left = (selection_coords.right - 13) + "px";
+  initial_div.style.top = selection_coords.top + window.pageYOffset - 18 - window.scrollY + "px"; 
+
   var text = selection.toString();
-  console.log(text);
+  createHighlightDotMain(initial_div, text);
+}
+
+function createHighlightDotMain(initial_div, text){
+  var initialTop = parseInt(initial_div.style.top) + window.scrollY; //(event.pageY - window.scrollY + 10) + "px";
+
   if (text){
-    console.log("Text highlighted: " + text);
-    var initial_div = document.createElement("button");
+    //console.log("Text highlighted: " + text);
+    
     initial_div.setAttribute("id", "highlight_button");
     initial_div.classList.add('initial_div-class');
     initial_div.textContent = "⬤";
     initial_div.style.position = "fixed";
-    initial_div.style.left = (selection_coords.left + selection_coords.width - 13) + "px";
-    var initialTop = selection_coords.top + window.pageYOffset - 18; //10 is to compensate for the font-size
-    console.log("initial top", initialTop);
-    initial_div.style.top = initialTop - window.scrollY + "px"; //(event.pageY - window.scrollY + 10) + "px";
+    
+    //console.log("initial top", initialTop);
+    
     initial_div.style.backgroundColor = "transparent";
     initial_div.style.border = "0";
     initial_div.style.color = "#d94141";
