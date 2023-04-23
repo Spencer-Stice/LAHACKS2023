@@ -175,6 +175,7 @@ function createHighlightDot(selection){
 
         // add event listener to delete button to remove response_div
         delete_button.addEventListener("click", function() {
+            console.log("this ran");
             response_div.remove();
             delete_button.remove();
         });
@@ -216,7 +217,7 @@ function Send(in_message) {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + YOUR_API_KEY
+        "Authorization": "Bearer " + YOUR_KEY
       },
       body: JSON.stringify(data)
     })
@@ -287,23 +288,6 @@ function scrollEvent() {
 window.addEventListener('scroll', scrollEvent);
 
 
-function selectionChange() {
-  const buttons = document.querySelectorAll('.initial_div-class');
-  const divs = document.querySelectorAll('.response_div-class');
-
-  // Check if any buttons were found
-  if (buttons.length > 0) {
-    // Loop through the collection of buttons and remove each button from the DOM
-    buttons.forEach((button) => {
-      button.remove();
-    });
-  } 
-  if (divs.length > 0) {
-    divs.forEach((div) => {
-      div.remove();
-    });
-  }
-}
 
 document.addEventListener('selectionchange', selectionChange);
 
