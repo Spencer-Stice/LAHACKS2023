@@ -5,7 +5,7 @@
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
 
-const YOUR_API_KEY = "huasd";
+const YOUR_API_KEY = "abc";
 
 
 var txtOutput = "";
@@ -41,7 +41,7 @@ const url = window.location.href;
 function getText(pageNumber) {
   const loadingTask = pdfjsLib.getDocument(url);
   const loadingPage = loadingTask.promise.then(function(pdf) {
-    var page = pdf.getPage(pageNumber);
+    var page = pdf.getPage(parseInt(pageNumber));
     return page;
   });
   const loadingText = loadingPage.then(function(page) {
@@ -96,10 +96,11 @@ function createHighlightDotPdf() {
     event.target.style.transform = "scale(1)";
   });
 
-  menu_div.addEventListener("transitionend", function() {
-    if (menu_div.style.transform === "scale(3)")
-      pdfPageQuery();
+  menu_div.addEventListener("transitionend", function(event) {
+    if (event.propertyName == "color"){
       menu_div.remove();
+      pdfPageQuery();
+    }
   });
 
   document.body.appendChild(menu_div);
@@ -126,7 +127,6 @@ function stylizePdfPageQuery(box) {
 
 //creates a textbox to input which page the user would like explained
 function pdfPageQuery() {
-  
     const query_input = document.createElement('input');
     query_input.type = 'text';
     query_input.setAttribute("id", "query_input");
@@ -157,6 +157,23 @@ function pdfPageQuery() {
           level += 1
           query_input.style.height = height + 'px';
           query_input.value += "\n";
+      }
+    });
+
+    query_input.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        // Enter key was pressed
+
+        const query_return_done = getText(query_input.value).then(function(text) {
+          var message_to_send = cleanPageText(text);
+          return Send(message_to_send, 1);
+        });
+  
+        query_return_done.then(function(){
+          handleResponse(parseInt(query_input.style.left), parseInt(query_input.style.top) + 60);
+          query_input.remove();
+          createHighlightDotPdf();
+        });
       }
     });
 
