@@ -362,10 +362,10 @@ function createHighlightDotMain(initial_div, text){
       event.target.style.transform = "scale(1)";
     });
 
-    initial_div.addEventListener("transitionend", function() {
-      if (initial_div.style.transform === "scale(3)") {
-      promise = Send(text, false);
-      promise_examples = Send(text, true)
+    initial_div.addEventListener("transitionend", function(event) {
+      if (initial_div.style.transform === "scale(3)" && event.propertyName === 'color') {
+      promise = Send(text, 1);
+      promise_examples = Send(text, 0)
 
       // create new button
       var explain_button = document.createElement("button");
@@ -470,48 +470,6 @@ function createHighlightDotMain(initial_div, text){
           var element = document.getElementById("examples_button");
           element.remove();
           handleResponse(parseInt(examples_button.style.left + 100), parseInt(examples_button.style.top) + 50);
-          /*
-          var response_div = document.createElement("div");
-          response_div.classList.add('response_div-class');
-          response_div.innerHTML = txtOutput; //"What would you like to ask about this?";
-          response_div.style.position = "fixed";
-          response_div.style.left = (parseInt(examples_button.style.left + 100) ) + "px";
-          //console.log("initial top", initialTop);
-          response_div.style.top = (parseInt(examples_button.style.top) + 50) + "px";
-          response_div.style.backgroundColor = "#dedede";
-          response_div.style.border = "0";
-          response_div.style.borderRadius = "15px";
-          response_div.style.fontSize = "14px";
-          response_div.style.padding = "15px";
-          response_div.style.color = "#000000";
-          response_div.style.maxWidth = "300px";
-          response_div.style.maxHeight = "200px";
-          response_div.style.overflowY = "scroll";
-          response_div.style.scrollbarWidth = 'thin';
-          response_div.style.scrollbarColor = 'red yellow'; // set the colors
-          response_div.style.scrollbarRadius = '10px'; // set the corner radius
-          console.log("this runs");
-          var delete_button = document.createElement("button");
-          delete_button.classList.add('delete_button-class');
-          delete_button.innerHTML = "X";
-          delete_button.style.position = "absolute";
-          delete_button.style.top = "5px";
-          delete_button.style.right = "5px";
-          delete_button.style.backgroundColor = "transparent";
-          delete_button.style.border = "0";
-          delete_button.style.color = "red";
-          delete_button.style.fontSize = "20px";
-          delete_button.style.cursor = "pointer";
-  
-          // add event listener to delete button to remove response_div
-          delete_button.addEventListener("click", function() {
-              console.log("this ran");
-              response_div.remove();
-              delete_button.remove();
-          });
-          document.body.appendChild(response_div);
-          response_div.insertBefore(delete_button, response_div.childNodes[0]);
-          */
         });
 
 
@@ -526,29 +484,15 @@ function createHighlightDotMain(initial_div, text){
 
     textBoxes.push([initial_div, initialTop]);
 
-
-    // // Add event listener to text box to remove it when clicked
-    // initial_div.addEventListener("click", function() {
-    //   var element = document.getElementById("highlight_button");
-    //   console.log(element);
-    //   element.remove();
-
-    //   console.log("removed");
-
-    //   Send(text)
-    //   .then(handleResponse((selection_coords.left + selection_coords.width - 10), initialTop - window.scrollY))
-    //   .catch(error => {
-    //     console.log(error);
-    //   })
-    // }); 
-
   }
 }
 
 function handleResponse(left, top) {
-    console.log("creating response");
     // Create text box for Chat-GPT response
     console.log("handle requests ran");
+    if (left / window.screen.width > 0.9) {
+      console.log("off the screen");
+    }
     var response_div = document.createElement("div");
     response_div.classList.add('response_div-class');
     response_div.innerHTML = txtOutput; 
