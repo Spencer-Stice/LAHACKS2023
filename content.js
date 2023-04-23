@@ -5,7 +5,7 @@
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
 
-const YOUR_API_KEY = "aodshf";
+const YOUR_API_KEY = "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";
 
 
 var txtOutput = "";
@@ -112,8 +112,27 @@ function queryMoment(selectedText) {
   const buttonRect = query_button.getBoundingClientRect();
   const parentElement = query_button.parentNode;
 
+  // create a new textarea element
+  var textarea = document.createElement("textarea");
 
-  const query_input = document.createElement('input');
+  // set the id and name attributes
+  textarea.id = "input-field";
+  textarea.name = "input-field";
+
+  
+  // set the number of rows
+  textarea.style.maxHeight = "100px";
+  textarea.style.padding = "10px";
+  textarea.style.fontFamily = "Arial, sans-serif";
+  textarea.style.border = "0";
+  textarea.style.backgroundColor = "#dedede";
+  textarea.rows = "2";
+  textarea.addEventListener('input', function() {
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  });
+
+  const query_input = document.createElement('input').appendChild(textarea);
   query_input.type = 'text';
   query_input.setAttribute("id", "query_input");
   query_input.classList.add('query_input-class');
@@ -140,40 +159,52 @@ function queryMoment(selectedText) {
   query_input.style.top = initialTopQueryInput - window.scrollY + "px"; 
   //query_input.style.backgroundColor = "transparent";
   //query_input.style.border = "0";
-  query_input.style.color = "#0d0c0c";
-  query_input.style.textAlign = "left";
-  query_input.style.fontSize = "16px";
-  query_input.style.opacity = "1";
-  query_input.style.cursor = "pointer";
-  query_input.style.resize = "none";
-  query_input.style.overflow = "hidden";
+  query_input.style.display = "flex";
+  query_input.style.flexDirection = "column";
+  query_input.style.alignItems = "flex-start";
+  query_input.style.marginBottom = "10px";
+  query_input.style.width = "300px";
+  query_input.style.minHeight = "10px";
+  query_input.style.height = "auto";
+  query_input.style.resize = "vertical";
+  query_input.style.borderRadius = "10px";
+  query_input.style.color = "black";
 
-  query_input.style.borderRadius = "15px";
-  query_input.style.fontSize = "14px";
-  query_input.style.padding = "15px";
-  //query_input.style.maxWidth = "300px";
-  query_input.style.maxHeight = "200px";
-  query_input.style.overflowY = "scroll";
-  query_input.style.width = "200px";
-  query_input.style.height = "10px";
 
-  var height = 10;
-  var level = 1;
+  // query_input.style.color = "#0d0c0c";
+  // query_input.style.textAlign = "left";
+  // query_input.style.fontSize = "16px";
+  // query_input.style.opacity = "1";
+  // query_input.style.cursor = "pointer";
+  // query_input.style.resize = "none";
+  // query_input.style.overflow = "hidden";
 
-  query_input.addEventListener('input', () => {
-    //query_input.style.height = 'auto';
-    //query_input.style.height = query_input.scrollHeight + 'px';
-    // query_input.style.height = query_input.scrollHeight + 'px';
-    console.log(query_input.value.length);
-    console.log(height, level);
-    if ((query_input.value.length / level) > 25) {
-        height += 10;
-        level += 1
-        query_input.style.height = height + 'px';
-        query_input.value += "\n";
-        console.log("moving");
-    }
-  });
+  // query_input.style.borderRadius = "15px";
+  // query_input.style.fontSize = "14px";
+  // query_input.style.padding = "15px";
+  // //query_input.style.maxWidth = "300px";
+  // query_input.style.maxHeight = "200px";
+  // query_input.style.overflowY = "scroll";
+  // query_input.style.width = "200px";
+  // query_input.style.height = "10px";
+
+  // var height = 10;
+  // var level = 1;
+
+  // query_input.addEventListener('input', () => {
+  //   //query_input.style.height = 'auto';
+  //   //query_input.style.height = query_input.scrollHeight + 'px';
+  //   // query_input.style.height = query_input.scrollHeight + 'px';
+  //   console.log(query_input.value.length);
+  //   console.log(height, level);
+  //   if ((query_input.value.length / level) > 25) {
+  //       height += 10;
+  //       level += 1
+  //       query_input.style.height = height + 'px';
+  //       query_input.value += "\n";
+  //       console.log("moving");
+  //   }
+  // });
 
   query_input.addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
