@@ -28,9 +28,6 @@ document.addEventListener("selectionchange", function() {
     document.getElementById('examples_button').remove();
 });
 
-
-
-
 document.addEventListener("selectionchange", function() {
   image.style.opacity = "0";
 });
@@ -65,32 +62,47 @@ function cleanPageText(text) {
   return pageText;
 }
 
+function stylizePdfMenuButton(initial_div) {
+  initial_div.setAttribute("id", "pdfMenuButton");
+  initial_div.classList.add('initial_div-class');
+  initial_div.textContent = "⬤";
+  initial_div.style.position = "fixed";
+  
+  initial_div.style.backgroundColor = "transparent";
+  initial_div.style.border = "0";
+  initial_div.style.color = "#d94141";
+  initial_div.style.textAlign = "center";
+  initial_div.style.fontSize = "16px";
+  initial_div.style.opacity = "0.8";
+  initial_div.style.cursor = "pointer";
+  initial_div.style.transition = "color .5s ease-in-out, transform .5s ease-in-out";
+}
+
 //creates pdf menu dot
 function createHighlightDotPdf() {
-  var initial_div = document.createElement("button");
-  initial_div.style.left = 90 + "%";
-  initial_div.style.top = 10 + "%"; 
+  var menu_div = document.createElement("button");
+  menu_div.style.left = 90 + "%";
+  menu_div.style.top = 10 + "%"; 
   
-  stylizeInitialDiv(initial_div);
-  initial_div.setAttribute("id", "pdf_menu_button");
+  stylizePdfMenuButton(menu_div);
 
-  initial_div.addEventListener("mouseover", function(event) {
+  menu_div.addEventListener("mouseover", function(event) {
     event.target.style.color = "#41d95f";
     event.target.style.transform = "scale(3)";
   });
   
-  initial_div.addEventListener("mouseout", function(event) {
+  menu_div.addEventListener("mouseout", function(event) {
     event.target.style.color = "#d94141";
     event.target.style.transform = "scale(1)";
   });
 
-  initial_div.addEventListener("transitionend", function() {
-    if (initial_div.style.transform === "scale(3)")
+  menu_div.addEventListener("transitionend", function() {
+    if (menu_div.style.transform === "scale(3)")
       pdfPageQuery();
-      initial_div.remove();
+      menu_div.remove();
   });
 
-  document.body.appendChild(initial_div);
+  document.body.appendChild(menu_div);
 }
 
 function stylizePdfPageQuery(box) {
@@ -292,14 +304,6 @@ function queryMoment(selectedText) {
 
   textBoxes.push([query_input, initialTopQueryInput]);
 
-}
-
-function createHighlightDotPdf(text) {
-  var initial_div = document.createElement("button");
-  initial_div.style.left = 80 + "%";
-  initial_div.style.top = 10 + "%";
-
-  createHighlightDotMain(initial_div, text);
 }
 
 function createHighlightDot(selection) {
