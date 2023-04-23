@@ -28,12 +28,6 @@ document.addEventListener("selectionchange", function() {
     document.getElementById('query_button').remove();
   if(document.getElementById('examples_button'))
     document.getElementById('examples_button').remove();
-  if(document.querySelectorAll('.query_input-class')){
-    const query_inputs = document.querySelectorAll('.query_input-class');
-    query_inputs.forEach((query_inputs) => {
-      query_inputs.remove();
-    });
-  }
 });
 
 document.addEventListener("selectionchange", function() {
