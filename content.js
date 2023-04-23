@@ -47,6 +47,8 @@ if (url.split(/[#?]/)[0].split('.').pop().trim() == "pdf") {
 //End of PDF handling
 
 
+var promise;
+
 function onUnload() {
   // Your unloading routine code here\
   console.log('yeet');
@@ -157,6 +159,7 @@ function createHighlightDot(selection){
     });
 
     initial_div.addEventListener("transitionend", function() {
+      promise = Send(text);
 
       // create new button
       var explain_button = document.createElement("button");
@@ -176,6 +179,7 @@ function createHighlightDot(selection){
       explain_button.style.fontSize = "16px";
       explain_button.style.cursor = "pointer";
       explain_button.style.borderRadius = "50%";
+      explain_button.setAttribute("id", "explain_button");
 
       explain_button.style.transition = "transform .5s ease-in-out";
       explain_button.addEventListener("mouseover", function(event) {
@@ -202,6 +206,7 @@ function createHighlightDot(selection){
       query_button.style.fontSize = "16px";
       query_button.style.cursor = "pointer";
       query_button.style.borderRadius = "50%";
+      query_button.setAttribute("id", "query_button");
 
       query_button.style.transition = "transform .5s ease-in-out";
       query_button.addEventListener("mouseover", function(event) {
@@ -228,6 +233,7 @@ function createHighlightDot(selection){
       examples_button.style.fontSize = "16px";
       examples_button.style.cursor = "pointer";
       examples_button.style.borderRadius = "50%";
+      examples_button.setAttribute("id", "examples_button");
 
       examples_button.style.transition = "transform .5s ease-in-out";
       examples_button.addEventListener("mouseover", function(event) {
@@ -255,9 +261,76 @@ function createHighlightDot(selection){
       document.body.appendChild(query_button);
       document.body.appendChild(examples_button);
 
+
       query_button.addEventListener('click', function() {
         console.log('removing buttons');
         queryMoment();
+      })
+      explain_button.addEventListener("click", function(event) {
+        var element = document.getElementById("query_button");
+        element.remove();
+        element = document.getElementById("examples_button");
+        element.remove();
+
+        var image = document.createElement("img");
+        image.src = chrome.runtime.getURL("./my_loading.gif");
+        image.style.position = "fixed";
+        image.style.left = (parseInt(explain_button.style.left + 5) ) + "px";
+        image.style.top = (parseInt(explain_button.style.top) + 30) + "px";
+        image.style.maxWidth = "20px";
+        image.style.maxHeight = "20px";
+        image.style.borderRadius = "10px";
+        
+        // add image to document
+        document.body.appendChild(image);
+        console.log("before promise");
+        promise.then(function(){
+          console.log("after promis");
+          var response_div = document.createElement("div");
+          response_div.classList.add('response_div-class');
+          response_div.innerHTML = txtOutput; //"What would you like to ask about this?";
+          response_div.style.position = "fixed";
+          response_div.style.left = (parseInt(explain_button.style.left + 20) ) + "px";
+          //console.log("initial top", initialTop);
+          response_div.style.top = (parseInt(explain_button.style.top) + 50) + "px";
+          response_div.style.backgroundColor = "#dedede";
+          response_div.style.border = "0";
+          response_div.style.borderRadius = "15px";
+          response_div.style.fontSize = "14px";
+          response_div.style.padding = "15px";
+          response_div.style.color = "#000000";
+          response_div.style.maxWidth = "300px";
+          response_div.style.maxHeight = "200px";
+          response_div.style.overflowY = "scroll";
+          response_div.style.scrollbarWidth = 'thin';
+          response_div.style.scrollbarColor = 'red yellow'; // set the colors
+          response_div.style.scrollbarRadius = '10px'; // set the corner radius
+          console.log("this runs");
+          var delete_button = document.createElement("button");
+          delete_button.classList.add('delete_button-class');
+          delete_button.innerHTML = "X";
+          delete_button.style.position = "absolute";
+          delete_button.style.top = "5px";
+          delete_button.style.right = "5px";
+          delete_button.style.backgroundColor = "transparent";
+          delete_button.style.border = "0";
+          delete_button.style.color = "red";
+          delete_button.style.fontSize = "20px";
+          delete_button.style.cursor = "pointer";
+  
+          // add event listener to delete button to remove response_div
+          delete_button.addEventListener("click", function() {
+              console.log("this ran");
+              response_div.remove();
+              delete_button.remove();
+          });
+          document.body.appendChild(response_div);
+          response_div.insertBefore(delete_button, response_div.childNodes[0]);
+        });
+
+
+        
+
       });
     });
     document.body.appendChild(initial_div);
@@ -357,7 +430,7 @@ function Send(in_message) {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + YOUR_KEY
+        "Authorization": "Bearer " + "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"
       },
       body: JSON.stringify(data)
     })

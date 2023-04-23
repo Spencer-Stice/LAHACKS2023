@@ -4,6 +4,7 @@
   "version": "1.0",
   "description": "An AI-powered smart research tool",
   "permissions": ["activeTab", "tabs", "tabGroups", "runtime", "background", "<all_urls>", "storage"],
+  "web_accessible_resources": ["my_loading.gif"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
