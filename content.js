@@ -4,7 +4,7 @@
 // dotenv.config();
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
-const YOUR_API_KEY = "akuwgfkagwfk";
+const YOUR_API_KEY = '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';
 
 var txtOutput = "";
 
@@ -23,6 +23,9 @@ document.addEventListener("selectionchange", function() {
   if(document.getElementById('examples_button'))
     document.getElementById('examples_button').remove();
 });
+
+
+
 
 document.addEventListener("selectionchange", function() {
   image.style.opacity = "0";
@@ -230,6 +233,7 @@ function createHighlightDotMain(initial_div, text){
     });
 
     initial_div.addEventListener("transitionend", function() {
+      if (initial_div.style.transform === "scale(3)") {
       promise = Send(text);
 
       // create new button
@@ -409,6 +413,7 @@ function createHighlightDotMain(initial_div, text){
         
 
       });
+    }
     });
     document.body.appendChild(initial_div);
 
@@ -496,7 +501,7 @@ function Send(in_message) {
 
   var data = {
       model: sModel,
-      messages: [{'role':'user', 'content':"Please explain this to me in simple terms: " + in_message}],
+      messages: [{'role':'user', 'content':"Please explain this to me in simple terms: " + in_message + ". I don't completely understand"}],
       temperature: dTemperature
   }
   console.log("Send HTTP request");
@@ -507,7 +512,7 @@ function Send(in_message) {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + "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"
+        "Authorization": "Bearer " + ayy
       },
       body: JSON.stringify(data)
     })
