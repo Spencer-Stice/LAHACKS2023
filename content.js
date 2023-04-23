@@ -4,15 +4,37 @@
 // dotenv.config();
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
+const YOUR_API_KEY = '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';
 
 var txtOutput = "";
 
-// chrome.runtime.sendMessage({ type: 'contentLoaded' }, function(response) {
-//   console.log('Message sent:', response);
-// });
+
+function onUnload() {
+  // Your unloading routine code here\
+  console.log('yeet');
+  //window.removeEventListener('beforeunload', onUnload);
+
+  var response_div = document.getElementsByClassName("response_div-class")[0];
+  if (response_div) {
+    // response_div.removeEventListener('click', function() {
+    //   response_div.remove();
+    // });
+    response_div.remove();
+  }
+  var initial_div = document.getElementsByClassName("initial_div-class")[0];
+  if (initial_div) {
+    initial_div.removeEventListener('click', clickButton);
+    initial_div.remove();
+  }
+  document.removeEventListener("mouseup", mouseUp);
+  window.removeEventListener('scroll', scrollEvent);
+  document.removeEventListener('selectionchange', selectionChange);
+}
+
+window.addEventListener('beforeunload', onUnload);
+
 
 function createHighlightDot(selection){
-  console.log("create highlight ran");
   var selection_coords = selection.getRangeAt(0).getBoundingClientRect();
   var text = selection.toString();
   console.log(text);
@@ -23,7 +45,7 @@ function createHighlightDot(selection){
     initial_div.classList.add('initial_div-class');
     initial_div.textContent = "⬤";
     initial_div.style.position = "fixed";
-    initial_div.style.left = (selection_coords.left + selection_coords.width - 13) + "px";
+    initial_div.style.left = (selection_coords.left + selection_coords.width - 10) + "px";
     var initialTop = selection_coords.top + window.pageYOffset - 18; //10 is to compensate for the font-size
     console.log("initial top", initialTop);
     initial_div.style.top = initialTop - window.scrollY + "px"; //(event.pageY - window.scrollY + 10) + "px";
@@ -35,7 +57,7 @@ function createHighlightDot(selection){
     initial_div.style.opacity = "0.8";
     initial_div.style.cursor = "pointer";
     initial_div.style.transition = "color .5s ease-in-out";
-
+    
     initial_div.addEventListener("mouseover", function(event) {
       event.target.style.color = "#41d95f";
     });
@@ -93,7 +115,6 @@ function createHighlightDot(selection){
       document.body.appendChild(query_button);
       document.body.appendChild(examples_button);
     });
-    
     document.body.appendChild(initial_div);
 
     textBoxes.push([initial_div, initialTop]);
@@ -129,6 +150,8 @@ function createHighlightDot(selection){
         response_div.style.scrollbarWidth = 'thin';
         response_div.style.scrollbarColor = 'red yellow'; // set the colors
         response_div.style.scrollbarRadius = '10px'; // set the corner radius
+    
+  
 
         ///////////////////////////////////////
         // create delete button
@@ -156,11 +179,9 @@ function createHighlightDot(selection){
         response_div.insertBefore(delete_button, response_div.childNodes[0]);
 
         //////////////////////////////////
-    
-        // Append text box to document
-
         textBoxes.push([response_div, initialTop]);
-  
+    
+        
       })
       .catch(error => {
         console.log(error);
@@ -189,7 +210,7 @@ function Send(in_message) {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + Your_key
+        "Authorization": "Bearer " + YOUR_API_KEY
       },
       body: JSON.stringify(data)
     })
@@ -222,44 +243,62 @@ function Send(in_message) {
 
 var textBoxes = []; 
 
+// window.addEventListener('unload', function() {
+//   chrome.runtime.disconnect();
+// });
+
 // Add an event listener to the "mouseup" event on the document object to detect when the user highlights text.
-var sel_string = "";
-var prev_sel_string = "";
-document.addEventListener("mouseup", function(event) {
-    if (sel_string != ""){
-      prev_sel_string = sel_string;
-    }
-    var selection = window.getSelection();
-    sel_string = selection.toString();
+function mouseUp() {
+  chrome.runtime.sendMessage({action: "getVariable"}, function(response) {
+    console.log(response.variable);
+    if (response.variable == 1) {    // enabled
+      if (sel_string != ""){
+        prev_sel_string = sel_string;
+      }
+      var selection = window.getSelection();
+      sel_string = selection.toString();
     
     if (sel_string && selection.rangeCount > 0 && !(sel_string === prev_sel_string)) { // Check if text is highlighted
       createHighlightDot(selection);
-    }
+    }}})};
+document.addEventListener("mouseup", mouseUp);
+
+function scrollEvent() {
+  console.log(textBoxes.length);
+  for (let i = 0; i < textBoxes.length; i++) {
+    var scrollTop = window.scrollY;
+    var newTop = textBoxes[i][1] - scrollTop;
+    //console.log("now initial top is ", textBoxes[i][1]);
+    textBoxes[i][0].style.top = newTop + 'px';
   }
-  );
+}
 
-  window.addEventListener('scroll', function() {
-    console.log(textBoxes.length);
-    for (let i = 0; i < textBoxes.length; i++) {
-      var scrollTop = window.scrollY;
-      var newTop = textBoxes[i][1] - scrollTop;
-      //console.log("now initial top is ", textBoxes[i][1]);
-      textBoxes[i][0].style.top = newTop + 'px';
-    }
-  });
+window.addEventListener('scroll', scrollEvent);
 
-  document.addEventListener('selectionchange', function() {
-    const buttons = document.querySelectorAll('.initial_div-class');
-    const divs = document.querySelectorAll('.response_div-class');
 
-    // Check if any buttons were found
-    if (buttons.length > 0) {
-      // Loop through the collection of buttons and remove each button from the DOM
-      buttons.forEach((button) => {
-        button.remove();
-      });
-    } 
-  });
+function selectionChange() {
+  const buttons = document.querySelectorAll('.initial_div-class');
+  const divs = document.querySelectorAll('.response_div-class');
+
+  // Check if any buttons were found
+  if (buttons.length > 0) {
+    // Loop through the collection of buttons and remove each button from the DOM
+    buttons.forEach((button) => {
+      button.remove();
+    });
+  } 
+  if (divs.length > 0) {
+    divs.forEach((div) => {
+      div.remove();
+    });
+  }
+}
+
+document.addEventListener('selectionchange', selectionChange);
+
+
+
+
   /*
   // This function is executed when the user clicks on the extension's browser action button.
   function onBrowserActionClicked(tab) {

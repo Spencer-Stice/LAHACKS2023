@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html class="popup_body">
   <head>
     <title>Smart Mark</title>
     <link rel="stylesheet" type="text/css" href="popup.css">
   </head>
   <body>
-    <div class = "popup">
+    <div class="popup">
       <h1>Smart Mark</h1>
-      <p>Content goes here.</p>
     </div>
+    <label>
+      <!-- <button id="toggle"></button> -->
+      <input type="range" id="toggleSlider" min="0" max="1" step="1">
+    </label>
+    <label for="toggleSlider" id="toggleLabel" class="switch">Enable for this tab</label>
+    <script src="popup.js"></script>
   </body>
 </html>
