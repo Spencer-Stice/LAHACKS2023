@@ -255,8 +255,10 @@ function createHighlightDot(selection){
       document.body.appendChild(query_button);
       document.body.appendChild(examples_button);
 
-
-
+      query_button.addEventListener('click', function() {
+        console.log('removing buttons');
+        queryMoment();
+      });
     });
     document.body.appendChild(initial_div);
 
