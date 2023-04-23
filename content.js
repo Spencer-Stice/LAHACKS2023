@@ -279,9 +279,18 @@ function queryMoment(selectedText) {
   }
   });  
 
+  var left = buttonRect.right + 10;
+  var top = buttonRect.top + window.pageYOffset - 10 + 13;
+
+  if (left / window.screen.width > 0.9) {
+    left = window.screen.width - 300;
+    top += 40;
+    console.log("off the screen");
+  }
+
   query_input.style.position = "fixed";
-  query_input.style.left = buttonRect.right + 10 + "px";
-  var initialTopQueryInput = buttonRect.top + window.pageYOffset - 10 + 13; 
+  query_input.style.left = left + "px";
+  var initialTopQueryInput = top; 
   console.log("initial top", initialTopQueryInput);
   query_input.style.top = initialTopQueryInput - window.scrollY + "px"; 
   //query_input.style.backgroundColor = "transparent";
@@ -514,7 +523,7 @@ function createHighlightDotMain(initial_div, text){
           }
           var element = document.getElementById("examples_button");
           element.remove();
-          handleResponse(parseInt(examples_button.style.left + 100), parseInt(examples_button.style.top) + 50);
+          handleResponse(parseInt(examples_button.style.left + 100), parseInt(explain_button.style.top) + 50);
         });
 
 
@@ -535,7 +544,10 @@ function createHighlightDotMain(initial_div, text){
 function handleResponse(left, top) {
     // Create text box for Chat-GPT response
     console.log("handle requests ran");
+    console.log(left, window.screen.width);
     if (left / window.screen.width > 0.9) {
+      left -= 150;
+      top += 20;
       console.log("off the screen");
     }
     var response_div = document.createElement("div");
