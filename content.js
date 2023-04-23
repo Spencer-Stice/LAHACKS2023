@@ -6,7 +6,7 @@ const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
 
 
-const YOUR_API_KEY = "asdf";
+const YOUR_API_KEY = "sadsf";
 
 var txtOutput = "";
 
@@ -175,8 +175,8 @@ function pdfPageQuery() {
         load.src = chrome.runtime.getURL("./my_loading.gif");
         load.style.position = "fixed";
         load.style.opacity = "1";
-        load.style.left = (parseInt(query_input.style.left) + 900 ) + "px";
-        load.style.top = (parseInt(query_input.style.top) + 70) + "px";
+        load.style.left = (parseInt(pdf_input.style.left) + 900 ) + "px";
+        load.style.top = (parseInt(pdf_input.style.top) + 70) + "px";
         load.style.maxWidth = "20px";
         load.style.maxHeight = "20px";
         load.style.borderRadius = "10px";
@@ -197,8 +197,8 @@ function pdfPageQuery() {
   
         query_return_done.then(function(){
           load.style.opacity = "0";
-          handleResponse(parseInt(query_input.style.left), parseInt(query_input.style.top) + 60);
-          query_input.remove();
+          handleResponse(parseInt(pdf_input.style.left), parseInt(pdf_input.style.top) + 60);
+          pdf_input.remove();
 
           createHighlightDotPdf();
         });
