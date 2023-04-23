@@ -95,7 +95,7 @@ function Send(in_message) {
 
   var data = {
       model: sModel,
-      messages: [{'role':'user', 'content':in_message}],
+      messages: [{'role':'user', 'content':"Please explain the following to me: " + in_message}],
       temperature: dTemperature
   }
   console.log("Send HTTP request");
@@ -106,7 +106,7 @@ function Send(in_message) {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + "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"
+        "Authorization": "Bearer " + "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"
       },
       body: JSON.stringify(data)
     })
