@@ -4,7 +4,7 @@
 // dotenv.config();
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
-const YOUR_API_KEY = "akuwgfkagwfk";
+const YOUR_API_KEY = "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";
 
 var txtOutput = "";
 
@@ -93,8 +93,7 @@ function onUnload() {
 
 window.addEventListener('beforeunload', onUnload);
 
-function queryMoment(xpos, ypos) {
-  console.log('query', xpos, ypos);
+function queryMoment(selectedText) {
 
   var explanation = document.getElementById("explain_button");
   if (explanation) {
@@ -169,6 +168,20 @@ function queryMoment(xpos, ypos) {
         query_input.style.height = height + 'px';
         query_input.value += "\n";
         console.log("moving");
+    }
+  });
+
+  query_input.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      // Enter key was pressed
+      const inputValue = query_input.value;
+      console.log(selectedText);
+      console.log(inputValue);
+      Send(inputValue)
+      .then(handleResponse(query_input.left + 10, query_input.top))
+      .catch(error => {
+        console.log(error);
+      })
     }
   });
 
@@ -327,7 +340,7 @@ function createHighlightDotMain(initial_div, text){
       element.remove(); // FIXME: cannot read properties of null 
 
       query_button.addEventListener('click', function() {
-        queryMoment();
+        queryMoment(text);
       });
 
       // add new button to document
@@ -359,56 +372,14 @@ function createHighlightDotMain(initial_div, text){
         // add image to document
         document.body.appendChild(image);
         console.log("before promise");
-        promise.then(function(){
+        promise.then( function () {
           console.log("after promis");
           image.style.opacity = "0";
           var element = document.getElementById("explain_button");
           element.remove();
-          var response_div = document.createElement("div");
-          response_div.classList.add('response_div-class');
-          response_div.innerHTML = txtOutput; //"What would you like to ask about this?";
-          response_div.style.position = "fixed";
-          response_div.style.left = (parseInt(explain_button.style.left + 100) ) + "px";
-          //console.log("initial top", initialTop);
-          response_div.style.top = (parseInt(explain_button.style.top) + 50) + "px";
-          response_div.style.backgroundColor = "#dedede";
-          response_div.style.border = "0";
-          response_div.style.borderRadius = "15px";
-          response_div.style.fontSize = "14px";
-          response_div.style.padding = "15px";
-          response_div.style.color = "#000000";
-          response_div.style.maxWidth = "300px";
-          response_div.style.maxHeight = "200px";
-          response_div.style.overflowY = "scroll";
-          response_div.style.scrollbarWidth = 'thin';
-          response_div.style.scrollbarColor = 'red yellow'; // set the colors
-          response_div.style.scrollbarRadius = '10px'; // set the corner radius
-          console.log("this runs");
-          var delete_button = document.createElement("button");
-          delete_button.classList.add('delete_button-class');
-          delete_button.innerHTML = "X";
-          delete_button.style.position = "absolute";
-          delete_button.style.top = "5px";
-          delete_button.style.right = "5px";
-          delete_button.style.backgroundColor = "transparent";
-          delete_button.style.border = "0";
-          delete_button.style.color = "red";
-          delete_button.style.fontSize = "20px";
-          delete_button.style.cursor = "pointer";
-  
-          // add event listener to delete button to remove response_div
-          delete_button.addEventListener("click", function() {
-              console.log("this ran");
-              response_div.remove();
-              delete_button.remove();
-          });
-          document.body.appendChild(response_div);
-          response_div.insertBefore(delete_button, response_div.childNodes[0]);
-        });
-
-
-        
-
+          handleResponse(parseInt(explain_button.style.left + 100), parseInt(explain_button.style.top) + 50);
+        }
+        )
       });
     });
     document.body.appendChild(initial_div);
@@ -416,76 +387,76 @@ function createHighlightDotMain(initial_div, text){
     textBoxes.push([initial_div, initialTop]);
 
 
-    // Add event listener to text box to remove it when clicked
-    initial_div.addEventListener("click", function() {
-      var element = document.getElementById("highlight_button");
-      console.log(element);
-      element.remove();
+    // // Add event listener to text box to remove it when clicked
+    // initial_div.addEventListener("click", function() {
+    //   var element = document.getElementById("highlight_button");
+    //   console.log(element);
+    //   element.remove();
 
-      console.log("removed");
+    //   console.log("removed");
 
-      Send(text)
-      .then(() => {
-        // Create text box for Chat-GPT response
-        var response_div = document.createElement("div");
-        response_div.classList.add('response_div-class');
-        response_div.innerHTML = txtOutput; //"What would you like to ask about this?";
-        response_div.style.position = "fixed";
-        response_div.style.left = (selection_coords.left + selection_coords.width - 10) + "px";
-        var initialTop = selection_coords.top + window.pageYOffset - 10;
-        //console.log("initial top", initialTop);
-        response_div.style.top = initialTop - window.scrollY + "px"; //(event.pageY - window.scrollY + 10) + "px";
-        response_div.style.backgroundColor = "#dedede";
-        response_div.style.border = "0";
-        response_div.style.borderRadius = "15px";
-        response_div.style.fontSize = "14px";
-        response_div.style.padding = "15px";
-        response_div.style.color = "#000000";
-        response_div.style.maxWidth = "300px";
-        response_div.style.maxHeight = "200px";
-        response_div.style.overflowY = "scroll";
-        response_div.style.scrollbarWidth = 'thin';
-        response_div.style.scrollbarColor = 'red yellow'; // set the colors
-        response_div.style.scrollbarRadius = '10px'; // set the corner radius
-    
-  
-
-        ///////////////////////////////////////
-        // create delete button
-        var delete_button = document.createElement("button");
-        delete_button.classList.add('delete_button-class');
-        delete_button.innerHTML = "X";
-        delete_button.style.position = "absolute";
-        delete_button.style.top = "5px";
-        delete_button.style.right = "5px";
-        delete_button.style.backgroundColor = "transparent";
-        delete_button.style.border = "0";
-        delete_button.style.color = "red";
-        delete_button.style.fontSize = "20px";
-        delete_button.style.cursor = "pointer";
-
-        // add event listener to delete button to remove response_div
-        delete_button.addEventListener("click", function() {
-            console.log("this ran");
-            response_div.remove();
-            delete_button.remove();
-        });
-
-        document.body.appendChild(response_div);
-
-        // add delete button to response_div
-        response_div.insertBefore(delete_button, response_div.childNodes[0]);
-
-        //////////////////////////////////
-        textBoxes.push([response_div, initialTop]);
-    
-        
-      })
-      .catch(error => {
-        console.log(error);
-      })
-    }); 
+    //   Send(text)
+    //   .then(handleResponse((selection_coords.left + selection_coords.width - 10), initialTop - window.scrollY))
+    //   .catch(error => {
+    //     console.log(error);
+    //   })
+    // }); 
   }
+}
+
+function handleResponse(left, top) {
+    // Create text box for Chat-GPT response
+    var response_div = document.createElement("div");
+    response_div.classList.add('response_div-class');
+    response_div.innerHTML = txtOutput; 
+    response_div.style.position = "fixed";
+    response_div.style.left = left + "px"; // (selection_coords.left + selection_coords.width - 10) + "px";
+    var initialTop = top;
+    //console.log("initial top", initialTop);
+    response_div.style.top = top - window.scrollY + "px"; //initialTop - window.scrollY + "px"; 
+    response_div.style.backgroundColor = "#dedede";
+    response_div.style.border = "0";
+    response_div.style.borderRadius = "15px";
+    response_div.style.fontSize = "14px";
+    response_div.style.padding = "15px";
+    response_div.style.color = "#000000";
+    response_div.style.maxWidth = "300px";
+    response_div.style.maxHeight = "200px";
+    response_div.style.overflowY = "scroll";
+    response_div.style.scrollbarWidth = 'thin';
+    response_div.style.scrollbarColor = 'red yellow'; // set the colors
+    response_div.style.scrollbarRadius = '10px'; // set the corner radius
+
+
+
+    ///////////////////////////////////////
+    // create delete button
+    var delete_button = document.createElement("button");
+    delete_button.classList.add('delete_button-class');
+    delete_button.innerHTML = "X";
+    delete_button.style.position = "absolute";
+    delete_button.style.top = "5px";
+    delete_button.style.right = "5px";
+    delete_button.style.backgroundColor = "transparent";
+    delete_button.style.border = "0";
+    delete_button.style.color = "red";
+    delete_button.style.fontSize = "20px";
+    delete_button.style.cursor = "pointer";
+
+    // add event listener to delete button to remove response_div
+    delete_button.addEventListener("click", function() {
+        console.log("this ran");
+        response_div.remove();
+        delete_button.remove();
+    });
+
+    document.body.appendChild(response_div);
+
+    // add delete button to response_div
+    response_div.insertBefore(delete_button, response_div.childNodes[0]);
+
+    //////////////////////////////////
+    textBoxes.push([response_div, initialTop]);  
 }
 
 // Function to make an HTTP POST request to the ChatGPT API
@@ -508,7 +479,7 @@ function Send(in_message) {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + "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"
+        "Authorization": "Bearer " + YOUR_API_KEY
       },
       body: JSON.stringify(data)
     })
