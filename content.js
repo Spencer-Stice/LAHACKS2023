@@ -199,29 +199,48 @@ function createHighlightDot(selection) {
   createHighlightDotMain(initial_div, text);
 }
 
+function stylizeInitialDiv(initial_div) {
+  initial_div.setAttribute("id", "highlight_button");
+  initial_div.classList.add('initial_div-class');
+  initial_div.textContent = "⬤";
+  initial_div.style.position = "fixed";
+  
+  initial_div.style.backgroundColor = "transparent";
+  initial_div.style.border = "0";
+  initial_div.style.color = "#d94141";
+  initial_div.style.textAlign = "center";
+  initial_div.style.fontSize = "16px";
+  initial_div.style.opacity = "0.8";
+  initial_div.style.cursor = "pointer";
+  initial_div.style.transition = "color .5s ease-in-out, transform .5s ease-in-out";
+}
+
+function stylizeOptionDiv(div) {
+  div.style.border = "1px solid black";
+  div.style.backgroundColor = "black";
+  div.style.color = "white";
+  div.style.textAlign = "center";
+  div.style.fontSize = "16px";
+  div.style.cursor = "pointer";
+  div.style.borderRadius = "50%";
+  div.style.position = "fixed";
+  div.style.transition = "transform .5s ease-in-out";
+
+  div.addEventListener("mouseover", function(event) {
+    event.target.style.transform = "scale(1.5)";
+  });
+  div.addEventListener("mouseout", function(event) {
+    event.target.style.transform = "scale(1)";
+  });
+}
 
 function createHighlightDotMain(initial_div, text){
   var initialTop = parseInt(initial_div.style.top) + window.scrollY; //(event.pageY - window.scrollY + 10) + "px";
 
   if (text){
-    //console.log("Text highlighted: " + text);
     
-    initial_div.setAttribute("id", "highlight_button");
-    initial_div.classList.add('initial_div-class');
-    initial_div.textContent = "⬤";
-    initial_div.style.position = "fixed";
+    stylizeInitialDiv(initial_div);
     
-    //console.log("initial top", initialTop);
-    
-    initial_div.style.backgroundColor = "transparent";
-    initial_div.style.border = "0";
-    initial_div.style.color = "#d94141";
-    initial_div.style.textAlign = "center";
-    initial_div.style.fontSize = "16px";
-    initial_div.style.opacity = "0.8";
-    initial_div.style.cursor = "pointer";
-    initial_div.style.transition = "color .5s ease-in-out, transform .5s ease-in-out";
-
     initial_div.addEventListener("mouseover", function(event) {
       event.target.style.color = "#41d95f";
       event.target.style.transform = "scale(3)";
@@ -241,85 +260,31 @@ function createHighlightDotMain(initial_div, text){
       explain_button.classList.add('explain_button-class');
       explain_button.setAttribute("id", "explain_button");
       explain_button.textContent = "E";
-      explain_button.style.position = "fixed";
-
-      
+      stylizeOptionDiv(explain_button);
+      explain_button.style.left = (parseInt(initial_div.style.left) + initial_div.offsetWidth + 10) + "px";
 
       var initialTopExplain = (parseInt(initial_div.style.top) - 30) + window.pageYOffset; 
-
-      explain_button.style.left = (parseInt(initial_div.style.left) + initial_div.offsetWidth + 10) + "px";
       explain_button.style.top =  initialTopExplain - window.scrollY + "px";
-      explain_button.style.border = "1px solid black";
-      explain_button.style.backgroundColor = "black";
-      explain_button.style.color = "white";
-      explain_button.style.textAlign = "center";
-      explain_button.style.fontSize = "16px";
-      explain_button.style.cursor = "pointer";
-      explain_button.style.borderRadius = "50%";
-      explain_button.setAttribute("id", "explain_button");
-
-      explain_button.style.transition = "transform .5s ease-in-out";
-      explain_button.addEventListener("mouseover", function(event) {
-        event.target.style.transform = "scale(1.5)";
-      });
-      explain_button.addEventListener("mouseout", function(event) {
-        event.target.style.transform = "scale(1)";
-      });
       
       var query_button = document.createElement("button");
       query_button.classList.add('query_button-class');
       query_button.setAttribute("id", "query_button");
       query_button.textContent = "?";
-      query_button.style.position = "fixed";
+      stylizeOptionDiv(query_button);
       query_button.style.left = (parseInt(initial_div.style.left) + initial_div.offsetWidth + 10) + "px";
 
       var initialTopQuery = (parseInt(initial_div.style.top)) + window.pageYOffset; //initial_div.style.top + window.pageYOffset; 
-
       query_button.style.top = initialTopQuery - window.scrollY + "px";//initialTopQuery - window.scrollY + "px";
-      query_button.style.backgroundColor = "black";
-      query_button.style.color = "white";
-      query_button.style.border = "1px solid black";
-      query_button.style.textAlign = "center";
-      query_button.style.fontSize = "16px";
-      query_button.style.cursor = "pointer";
-      query_button.style.borderRadius = "50%";
-      query_button.setAttribute("id", "query_button");
-
-      query_button.style.transition = "transform .5s ease-in-out";
-      query_button.addEventListener("mouseover", function(event) {
-        event.target.style.transform = "scale(1.5)";
-      });
-      query_button.addEventListener("mouseout", function(event) {
-        event.target.style.transform = "scale(1)";
-      });
-
 
       var examples_button = document.createElement("button");
       examples_button.classList.add('examples_button-class');
       examples_button.setAttribute("id", "examples_button");
       examples_button.textContent = "C";
-      examples_button.style.position = "fixed";
+      stylizeOptionDiv(examples_button);
       examples_button.style.left = (parseInt(initial_div.style.left) + initial_div.offsetWidth + 10) + "px";
 
       var initialTopExamples = (parseInt(initial_div.style.top) + 30) + window.pageYOffset; 
-
       examples_button.style.top = initialTopExamples - window.scrollY + "px";
-      examples_button.style.backgroundColor = "black";
-      examples_button.style.color = "white";
-      examples_button.style.border = "1px solid black";
-      examples_button.style.textAlign = "center";
-      examples_button.style.fontSize = "16px";
-      examples_button.style.cursor = "pointer";
-      examples_button.style.borderRadius = "50%";
-      examples_button.setAttribute("id", "examples_button");
-
-      examples_button.style.transition = "transform .5s ease-in-out";
-      examples_button.addEventListener("mouseover", function(event) {
-        event.target.style.transform = "scale(1.5)";
-      });
-      examples_button.addEventListener("mouseout", function(event) {
-        event.target.style.transform = "scale(1)";
-      });
 
       textBoxes.push([explain_button, initialTopExplain]);
       textBoxes.push([query_button, initialTopQuery]);
