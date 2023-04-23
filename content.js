@@ -93,8 +93,9 @@ function onUnload() {
 
 window.addEventListener('beforeunload', onUnload);
 
-function queryMoment() {
-  console.log('query');
+function queryMoment(xpos, ypos) {
+  console.log('query', xpos, ypos);
+
   var explanation = document.getElementById("explain_button");
   if (explanation) {
     explanation.remove();
@@ -107,6 +108,7 @@ function queryMoment() {
   const query_button = document.getElementById("query_button");
   const buttonRect = query_button.getBoundingClientRect();
   const parentElement = query_button.parentNode;
+
 
   const query_input = document.createElement('input');
   query_input.type = 'text';
@@ -130,18 +132,50 @@ function queryMoment() {
 
   query_input.style.position = "fixed";
   query_input.style.left = buttonRect.right + 10 + "px";
-  var initialTop = buttonRect.top + window.pageYOffset - 10; 
-  console.log("initial top", initialTop);
-  query_input.style.top = initialTop - window.scrollY + 13 + "px"; 
+  var initialTopQueryInput = buttonRect.top + window.pageYOffset - 10 + 13; 
+  console.log("initial top", initialTopQueryInput);
+  query_input.style.top = initialTopQueryInput - window.scrollY + "px"; 
   //query_input.style.backgroundColor = "transparent";
   //query_input.style.border = "0";
   query_input.style.color = "#0d0c0c";
   query_input.style.textAlign = "left";
   query_input.style.fontSize = "16px";
-  query_input.style.opacity = "0.8";
+  query_input.style.opacity = "1";
   query_input.style.cursor = "pointer";
+  query_input.style.resize = "none";
+  query_input.style.overflow = "hidden";
+
+  query_input.style.borderRadius = "15px";
+  query_input.style.fontSize = "14px";
+  query_input.style.padding = "15px";
+  //query_input.style.maxWidth = "300px";
+  query_input.style.maxHeight = "200px";
+  query_input.style.overflowY = "scroll";
+  query_input.style.width = "200px";
+  query_input.style.height = "10px";
+
+  var height = 10;
+  var level = 1;
+
+  query_input.addEventListener('input', () => {
+    //query_input.style.height = 'auto';
+    //query_input.style.height = query_input.scrollHeight + 'px';
+    // query_input.style.height = query_input.scrollHeight + 'px';
+    console.log(query_input.value.length);
+    console.log(height, level);
+    if ((query_input.value.length / level) > 25) {
+        height += 10;
+        level += 1
+        query_input.style.height = height + 'px';
+        query_input.value += "\n";
+        console.log("moving");
+    }
+  });
 
   parentElement.insertBefore(query_input, query_button.nextSibling);
+
+  textBoxes.push([query_input, initialTopQueryInput]);
+
 }
 
 function createHighlightDotPdf(text) {
@@ -154,14 +188,15 @@ function createHighlightDotPdf(text) {
 
 function createHighlightDot(selection) {
   var initial_div = document.createElement("button");
-
   var selection_coords = selection.getRangeAt(0).getBoundingClientRect();
   initial_div.style.left = (selection_coords.right - 13) + "px";
   initial_div.style.top = selection_coords.top + window.pageYOffset - 18 - window.scrollY + "px"; 
 
   var text = selection.toString();
+
   createHighlightDotMain(initial_div, text);
 }
+
 
 function createHighlightDotMain(initial_div, text){
   var initialTop = parseInt(initial_div.style.top) + window.scrollY; //(event.pageY - window.scrollY + 10) + "px";
@@ -255,6 +290,7 @@ function createHighlightDotMain(initial_div, text){
         event.target.style.transform = "scale(1)";
       });
 
+
       var examples_button = document.createElement("button");
       examples_button.classList.add('examples_button-class');
       examples_button.setAttribute("id", "examples_button");
@@ -291,7 +327,6 @@ function createHighlightDotMain(initial_div, text){
       element.remove(); // FIXME: cannot read properties of null 
 
       query_button.addEventListener('click', function() {
-        console.log('removing buttons');
         queryMoment();
       });
 
