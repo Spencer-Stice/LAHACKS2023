@@ -6,7 +6,7 @@ const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
 
 
-const YOUR_API_KEY = "adsf";
+const YOUR_API_KEY = "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";
 
 var txtOutput = "";
 
@@ -28,6 +28,12 @@ document.addEventListener("selectionchange", function() {
     document.getElementById('query_button').remove();
   if(document.getElementById('examples_button'))
     document.getElementById('examples_button').remove();
+  if(document.querySelectorAll('.query_input-class')){
+    const query_inputs = document.querySelectorAll('.query_input-class');
+    query_inputs.forEach((query_inputs) => {
+      query_inputs.remove();
+    });
+  }
 });
 
 document.addEventListener("selectionchange", function() {
@@ -264,7 +270,6 @@ function queryMoment(selectedText) {
   const query_input = document.createElement('input').appendChild(textarea);
   query_input.type = 'text';
   query_input.setAttribute("id", "query_input_");
-  query_input.classList.add('query_input-class');
   //query_input.textContent = "What's your question...";
   query_input.value = "What's your question....";
   query_input.style.color = "#999"; 
@@ -307,6 +312,7 @@ function queryMoment(selectedText) {
   query_input.style.resize = "vertical";
   query_input.style.borderRadius = "10px";
   query_input.style.color = "black";
+  query_input.classList.add('query_input-class');
 
   query_input.addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
@@ -581,7 +587,7 @@ function handleResponse(left, top) {
     // create delete button
     var delete_button = document.createElement("button");
     delete_button.classList.add('delete_button-class');
-    delete_button.innerHTML = "X";
+    delete_button.innerHTML = "×";
     delete_button.style.position = "absolute";
     delete_button.style.top = "5px";
     delete_button.style.right = "5px";
