@@ -5,10 +5,12 @@
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
 
-const YOUR_API_KEY = "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";
+const YOUR_API_KEY = "huasd";
 
 
 var txtOutput = "";
+
+var query_return_done;
 
 var image = document.createElement("img");
 
@@ -26,15 +28,16 @@ document.addEventListener("selectionchange", function() {
     document.getElementById('examples_button').remove();
 });
 
-
-
-
 document.addEventListener("selectionchange", function() {
   image.style.opacity = "0";
 });
 
 
 //PDF helper functions
+const url = window.location.href;
+
+//Gets the text from a pdf for an input page number
+//Returns a promise, with text = a raw array of the pdf lines
 function getText(pageNumber) {
   const loadingTask = pdfjsLib.getDocument(url);
   const loadingPage = loadingTask.promise.then(function(pdf) {
@@ -48,6 +51,8 @@ function getText(pageNumber) {
   return loadingText;
 }
 
+//Cleans up the raw array of pdf lines
+//Returns a string
 function cleanPageText(text) {
   var pageText = "";
   var linesArray = text.items;
@@ -57,16 +62,121 @@ function cleanPageText(text) {
   return pageText;
 }
 
-const url = window.location.href;
+function stylizePdfMenuButton(initial_div) {
+  initial_div.setAttribute("id", "pdfMenuButton");
+  initial_div.classList.add('initial_div-class');
+  initial_div.textContent = "⬤";
+  initial_div.style.position = "fixed";
+  
+  initial_div.style.backgroundColor = "transparent";
+  initial_div.style.border = "0";
+  initial_div.style.color = "#d94141";
+  initial_div.style.textAlign = "center";
+  initial_div.style.fontSize = "16px";
+  initial_div.style.opacity = "0.8";
+  initial_div.style.cursor = "pointer";
+  initial_div.style.transition = "color .5s ease-in-out, transform .5s ease-in-out";
+}
+
+//creates pdf menu dot
+function createHighlightDotPdf() {
+  var menu_div = document.createElement("button");
+  menu_div.style.left = 90 + "%";
+  menu_div.style.top = 10 + "%"; 
+  
+  stylizePdfMenuButton(menu_div);
+
+  menu_div.addEventListener("mouseover", function(event) {
+    event.target.style.color = "#41d95f";
+    event.target.style.transform = "scale(3)";
+  });
+  
+  menu_div.addEventListener("mouseout", function(event) {
+    event.target.style.color = "#d94141";
+    event.target.style.transform = "scale(1)";
+  });
+
+  menu_div.addEventListener("transitionend", function() {
+    if (menu_div.style.transform === "scale(3)")
+      pdfPageQuery();
+      menu_div.remove();
+  });
+
+  document.body.appendChild(menu_div);
+}
+
+function stylizePdfPageQuery(box) {
+  box.style.position = "fixed";
+  box.style.left = 80 + "%";
+  box.style.top = 10 + "%"; 
+  box.style.color = "#0d0c0c";
+  box.style.textAlign = "left";
+  box.style.fontSize = "9px";
+  box.style.opacity = "1";
+  box.style.cursor = "pointer";
+  box.style.resize = "none";
+  box.style.overflow = "hidden";
+  box.style.borderRadius = "15px";
+  box.style.padding = "15px";
+  box.style.maxHeight = "200px";
+  box.style.overflowY = "scroll";
+  box.style.width = "200px";
+  box.style.height = "10px";
+}
+
+//creates a textbox to input which page the user would like explained
+function pdfPageQuery() {
+  
+    const query_input = document.createElement('input');
+    query_input.type = 'text';
+    query_input.setAttribute("id", "query_input");
+    query_input.classList.add('query_input-class');
+    query_input.value = "Which page would you like to know more about?";
+    query_input.style.color = "#999"; 
+  
+    query_input.addEventListener('focus', function() {
+      console.log(this.value);
+      if (this.value=='Which page would you like to know more about?') {
+        this.value='';
+      }
+    });
+    query_input.addEventListener('blur', function() {
+      if (this.value=='') {
+        this.value='Which page would you like to know more about?';
+    }
+    });  
+  
+    stylizePdfPageQuery(query_input);
+  
+    var height = 10;
+    var level = 1;
+  
+    query_input.addEventListener('input', () => {
+      if ((query_input.value.length / level) > 25) {
+          height += 10;
+          level += 1
+          query_input.style.height = height + 'px';
+          query_input.value += "\n";
+      }
+    });
+
+    document.body.appendChild(query_input);
+
+}
+
 //Check for PDFs:
 if (url.split(/[#?]/)[0].split('.').pop().trim() == "pdf") {
   //initialize pdf object
   var pdfjsLib = window['pdfjs-dist/build/pdf'];
 
-  getText(1).then(function(text) {
+  //create pdf dot
+  createHighlightDotPdf();
+
+
+  /*getText(1).then(function(text) {
     var temp = cleanPageText(text);
     createHighlightDotPdf(temp);
-  });
+  });*/
 
 }
 //End of PDF handling
@@ -98,7 +208,6 @@ function onUnload() {
 window.addEventListener('beforeunload', onUnload);
 
 function queryMoment(selectedText) {
-
   var explanation = document.getElementById("explain_button");
   if (explanation) {
     explanation.remove();
@@ -176,11 +285,13 @@ function queryMoment(selectedText) {
       const inputValue = query_input.value;
       console.log(selectedText);
       console.log(inputValue);
-      Send(inputValue)
-      .then(handleResponse(query_input.left + 10, query_input.top))
-      .catch(error => {
-        console.log(error);
-      })
+      var message_to_send = "I have a question about the following: " + selectedText + "Please tell me: " + inputValue;
+      console.log(message_to_send);
+      query_return_done = Send(message_to_send, 3);
+
+      query_return_done.then(function(){
+      handleResponse(parseInt(query_input.style.left), parseInt(query_input.style.top) + 60)
+        });
     }
   });
 
@@ -188,14 +299,6 @@ function queryMoment(selectedText) {
 
   textBoxes.push([query_input, initialTopQueryInput]);
 
-}
-
-function createHighlightDotPdf(text) {
-  var initial_div = document.createElement("button");
-  initial_div.style.left = 80 + "%";
-  initial_div.style.top = 10 + "%";
-
-  createHighlightDotMain(initial_div, text);
 }
 
 function createHighlightDot(selection) {
@@ -506,17 +609,21 @@ function handleResponse(left, top) {
 }
 
 // Function to make an HTTP POST request to the ChatGPT API
-function Send(in_message, examples) {
+function Send(in_message, type) {
+
   var sModel = "gpt-3.5-turbo";// "text-davinci-003";
   var iMaxTokens = 100;
   var sUserId = "1";
   var dTemperature = 0.5;    
   var message_list = [];
-  if(examples){
+  if(type === 0){
     message_list = [{'role':'user', 'content':"Please give me 3 examples of the following: " + in_message}];
   }
-  else{
+  else if(type === 1){
     message_list = [{'role':'user', 'content':"Please explain this to me in simple terms: " + in_message + ". I don't completely understand"}];
+  }
+  else{
+    message_list = [{'role':'user', 'content':in_message}];
   }
   var data = {
       model: sModel,
