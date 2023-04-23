@@ -177,6 +177,16 @@ function pdfPageQuery() {
     pdf_input.addEventListener('keydown', function(event) {
       if (event.key === 'Enter') {
         // Enter key was pressed
+        var load = document.createElement("img");
+        load.src = chrome.runtime.getURL("./my_loading.gif");
+        load.style.position = "fixed";
+        load.style.opacity = "1";
+        load.style.left = (parseInt(query_input.style.left) + 900 ) + "px";
+        load.style.top = (parseInt(query_input.style.top) + 70) + "px";
+        load.style.maxWidth = "20px";
+        load.style.maxHeight = "20px";
+        load.style.borderRadius = "10px";
+        document.body.appendChild(load);
 
         var failed = false;
         const query_return_done = getText(pdf_input.value).then(function(text) {
@@ -191,11 +201,11 @@ function pdfPageQuery() {
           }
         });
   
-        query_return_done.then(function(result){
-          if (failed)
-            return;
-          handleResponse(parseInt(pdf_input.style.left), parseInt(pdf_input.style.top) + 60);
-          pdf_input.remove();
+        query_return_done.then(function(){
+          load.style.opacity = "0";
+          handleResponse(parseInt(query_input.style.left), parseInt(query_input.style.top) + 60);
+          query_input.remove();
+
           createHighlightDotPdf();
         });
       }
@@ -338,8 +348,8 @@ function queryMoment(selectedText) {
       load.src = chrome.runtime.getURL("./my_loading.gif");
       load.style.position = "fixed";
       load.style.opacity = "1";
-      load.style.left = (parseInt(query_input.style.left) + 130 ) + "px";
-      load.style.top = (parseInt(query_input.style.top) - 20) + "px";
+      load.style.left = (parseInt(query_input.style.left) + 130) + "px";
+      load.style.top = (parseInt(query_input.style.top) -25) + "px";
       load.style.maxWidth = "20px";
       load.style.maxHeight = "20px";
       load.style.borderRadius = "10px";
