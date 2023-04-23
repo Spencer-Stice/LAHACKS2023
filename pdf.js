@@ -52,7 +52,6 @@ exports.getVerbosityLevel = getVerbosityLevel;
 exports.info = info;
 exports.isArrayBuffer = isArrayBuffer;
 exports.isArrayEqual = isArrayEqual;
-exports.normalizeUnicode = normalizeUnicode;
 exports.objectFromMap = objectFromMap;
 exports.objectSize = objectSize;
 exports.setVerbosityLevel = setVerbosityLevel;
@@ -829,17 +828,6 @@ function createPromiseCapability() {
   });
   return capability;
 }
-let NormalizeRegex = null;
-let NormalizationMap = null;
-function normalizeUnicode(str) {
-  if (!NormalizeRegex) {
-    NormalizeRegex = /([\u00a0\u00b5\u037e\u0eb3\u2000-\u200a\u202f\u2126\ufb00-\ufb04\ufb06\ufb20-\ufb36\ufb38-\ufb3c\ufb3e\ufb40-\ufb41\ufb43-\ufb44\ufb46-\ufba1\ufba4-\ufba9\ufbae-\ufbb1\ufbd3-\ufbdc\ufbde-\ufbe7\ufbea-\ufbf8\ufbfc-\ufbfd\ufc00-\ufc5d\ufc64-\ufcf1\ufcf5-\ufd3d\ufd88\ufdf4\ufdfa-\ufdfb\ufe71\ufe77\ufe79\ufe7b\ufe7d]+)|(\ufb05+)/gu;
-    NormalizationMap = new Map([["ﬅ", "ſt"]]);
-  }
-  return str.replaceAll(NormalizeRegex, (_, p1, p2) => {
-    return p1 ? p1.normalize("NFKC") : NormalizationMap.get(p2);
-  });
-}
 
 /***/ }),
 /* 2 */
@@ -992,7 +980,7 @@ function getDocument(src) {
   }
   const fetchDocParams = {
     docId,
-    apiVersion: '3.6.101',
+    apiVersion: '3.5.141',
     data,
     password,
     disableAutoFetch,
@@ -1486,14 +1474,12 @@ class PDFPageProxy {
     return intentState.opListReadCapability.promise;
   }
   streamTextContent({
-    includeMarkedContent = false,
-    disableNormalization = false
+    includeMarkedContent = false
   } = {}) {
     const TEXT_CONTENT_CHUNK_SIZE = 100;
     return this._transport.messageHandler.sendWithStream("GetTextContent", {
       pageIndex: this._pageIndex,
-      includeMarkedContent: includeMarkedContent === true,
-      disableNormalization: disableNormalization === true
+      includeMarkedContent: includeMarkedContent === true
     }, {
       highWaterMark: TEXT_CONTENT_CHUNK_SIZE,
       size(textContent) {
@@ -2731,9 +2717,9 @@ class InternalRenderTask {
     }
   }
 }
-const version = '3.6.101';
+const version = '3.5.141';
 exports.version = version;
-const build = '6e1b234c6';
+const build = 'be0f6ee08';
 exports.build = build;
 
 /***/ }),
@@ -2918,7 +2904,6 @@ class AnnotationEditor {
       }
     } = this.parent.viewport;
     this.rotation = rotation;
-    this.pageRotation = (360 + rotation - this._uiManager.viewParameters.rotation) % 360;
     this.pageDimensions = [pageWidth, pageHeight];
     this.pageTranslation = [pageX, pageY];
     const [width, height] = this.parentDimensions;
@@ -3020,7 +3005,7 @@ class AnnotationEditor {
     return this._uiManager.viewParameters.realScale;
   }
   get parentRotation() {
-    return (this._uiManager.viewParameters.rotation + this.pageRotation) % 360;
+    return this._uiManager.viewParameters.rotation;
   }
   get parentDimensions() {
     const {
@@ -10423,7 +10408,7 @@ function renderTextLayer(params) {
   const style = getComputedStyle(container);
   const visibility = style.getPropertyValue("visibility");
   const scaleFactor = parseFloat(style.getPropertyValue("--scale-factor"));
-  if (visibility === "visible" && (!scaleFactor || Math.abs(scaleFactor - viewport.scale) > 1e-5)) {
+  if (visibility === "visible" && (!scaleFactor || Math.abs(scaleFactor - viewport.scale) > 1e-15)) {
     console.error("The `--scale-factor` CSS-variable must be set, " + "to the same value as `viewport.scale`, " + "either on the `container`-element itself or higher up in the DOM.");
   }
   const task = new TextLayerRenderTask(params);
@@ -15959,12 +15944,6 @@ Object.defineProperty(exports, "loadScript", ({
     return _display_utils.loadScript;
   }
 }));
-Object.defineProperty(exports, "normalizeUnicode", ({
-  enumerable: true,
-  get: function () {
-    return _util.normalizeUnicode;
-  }
-}));
 Object.defineProperty(exports, "renderTextLayer", ({
   enumerable: true,
   get: function () {
@@ -16005,8 +15984,8 @@ var _annotation_layer = __w_pdfjs_require__(32);
 var _worker_options = __w_pdfjs_require__(14);
 var _svg = __w_pdfjs_require__(35);
 var _xfa_layer = __w_pdfjs_require__(34);
-const pdfjsVersion = '3.6.101';
-const pdfjsBuild = '6e1b234c6';
+const pdfjsVersion = '3.5.141';
+const pdfjsBuild = 'be0f6ee08';
 })();
 
 /******/ 	return __webpack_exports__;

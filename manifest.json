@@ -8,7 +8,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["pdf.js", "content.js"],
+      "js": ["pdf.js", "pdf.worker.js", "content.js"],
       "type": "module"
     }
   ],
