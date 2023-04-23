@@ -4,9 +4,30 @@
 // dotenv.config();
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
-const YOUR_API_KEY = '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';
+const YOUR_API_KEY;
 
 var txtOutput = "";
+
+var image = document.createElement("img");
+
+document.addEventListener("selectionchange", function() {
+  if(document.getElementById('highlight_button'))
+    document.getElementById('highlight_button').remove();
+});
+
+document.addEventListener("selectionchange", function() {
+  if(document.getElementById('explain_button'))
+    document.getElementById('explain_button').remove();
+  if(document.getElementById('query_button'))
+    document.getElementById('query_button').remove();
+  if(document.getElementById('examples_button'))
+    document.getElementById('examples_button').remove();
+});
+
+document.addEventListener("selectionchange", function() {
+  image.style.opacity = "0";
+});
+
 
 //PDF helper functions
 function getText(pageNumber) {
@@ -168,6 +189,8 @@ function createHighlightDot(selection){
       explain_button.textContent = "E";
       explain_button.style.position = "fixed";
 
+      
+
       var initialTopExplain = (parseInt(initial_div.style.top) - 30) + window.pageYOffset; 
 
       explain_button.style.left = (parseInt(initial_div.style.left) + initial_div.offsetWidth + 10) + "px";
@@ -248,6 +271,7 @@ function createHighlightDot(selection){
       textBoxes.push([examples_button, initialTopExamples]);
 
       var element = document.getElementById("highlight_button");
+
       element.remove(); // FIXME: cannot read properties of null 
 
       query_button.addEventListener('click', function() {
@@ -272,9 +296,9 @@ function createHighlightDot(selection){
         element = document.getElementById("examples_button");
         element.remove();
 
-        var image = document.createElement("img");
         image.src = chrome.runtime.getURL("./my_loading.gif");
         image.style.position = "fixed";
+        image.style.opacity = "1";
         image.style.left = (parseInt(explain_button.style.left + 5) ) + "px";
         image.style.top = (parseInt(explain_button.style.top) + 30) + "px";
         image.style.maxWidth = "20px";
@@ -286,11 +310,14 @@ function createHighlightDot(selection){
         console.log("before promise");
         promise.then(function(){
           console.log("after promis");
+          image.style.opacity = "0";
+          var element = document.getElementById("explain_button");
+          element.remove();
           var response_div = document.createElement("div");
           response_div.classList.add('response_div-class');
           response_div.innerHTML = txtOutput; //"What would you like to ask about this?";
           response_div.style.position = "fixed";
-          response_div.style.left = (parseInt(explain_button.style.left + 20) ) + "px";
+          response_div.style.left = (parseInt(explain_button.style.left + 100) ) + "px";
           //console.log("initial top", initialTop);
           response_div.style.top = (parseInt(explain_button.style.top) + 50) + "px";
           response_div.style.backgroundColor = "#dedede";
@@ -419,7 +446,7 @@ function Send(in_message) {
 
   var data = {
       model: sModel,
-      messages: [{'role':'user', 'content':"Please explain the following to me: " + in_message}],
+      messages: [{'role':'user', 'content':"Please explain this to me in simple terms: " + in_message}],
       temperature: dTemperature
   }
   console.log("Send HTTP request");
@@ -430,7 +457,7 @@ function Send(in_message) {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + "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"
+        "Authorization": "Bearer " + "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"
       },
       body: JSON.stringify(data)
     })
