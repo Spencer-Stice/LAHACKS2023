@@ -8,6 +8,44 @@ const YOUR_API_KEY = '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';
 
 var txtOutput = "";
 
+//PDF helper functions
+function getText(pageNumber) {
+  const loadingTask = pdfjsLib.getDocument(url);
+  const loadingPage = loadingTask.promise.then(function(pdf) {
+    var page = pdf.getPage(pageNumber);
+    return page;
+  });
+  const loadingText = loadingPage.then(function(page) {
+    text = page.getTextContent();
+    return text;
+  });
+  return loadingText;
+}
+
+function cleanPageText(text) {
+  var pageText = "";
+  var linesArray = text.items;
+  for (var line in linesArray) {
+    pageText += "\n" + linesArray[line].str;
+  }
+  return pageText;
+}
+
+const url = window.location.href;
+//Check for PDFs:
+if (url.split(/[#?]/)[0].split('.').pop().trim() == "pdf") {
+  //initialize pdf object
+  var pdfjsLib = window['pdfjs-dist/build/pdf'];
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+
+  getText(1).then(function(text) {
+    var temp = cleanPageText(text);
+    console.log(temp);
+  });
+
+}
+//End of PDF handling
+
 
 function onUnload() {
   // Your unloading routine code here\
