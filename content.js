@@ -23,15 +23,76 @@ function createHighlightDot(selection){
     initial_div.classList.add('initial_div-class');
     initial_div.textContent = "⬤";
     initial_div.style.position = "fixed";
-    initial_div.style.left = (selection_coords.left + selection_coords.width - 10) + "px";
-    var initialTop = selection_coords.top + window.pageYOffset - 10; //10 is to compensate for the font-size
+    initial_div.style.left = (selection_coords.left + selection_coords.width - 13) + "px";
+    var initialTop = selection_coords.top + window.pageYOffset - 18; //10 is to compensate for the font-size
     console.log("initial top", initialTop);
     initial_div.style.top = initialTop - window.scrollY + "px"; //(event.pageY - window.scrollY + 10) + "px";
     initial_div.style.backgroundColor = "transparent";
     initial_div.style.border = "0";
-    initial_div.style.color = "#fcca03";
+    initial_div.style.color = "#d94141";
     initial_div.style.textAlign = "center";
-    initial_div.style.fontSize = "10px";
+    initial_div.style.fontSize = "16px";
+    initial_div.style.opacity = "0.8";
+    initial_div.style.cursor = "pointer";
+    initial_div.style.transition = "color .5s ease-in-out";
+
+    initial_div.addEventListener("mouseover", function(event) {
+      event.target.style.color = "#41d95f";
+    });
+    
+    initial_div.addEventListener("mouseout", function(event) {
+      event.target.style.color = "#d94141";
+    });
+
+    initial_div.addEventListener("transitionend", function() {
+      // create new button
+      var explain_button = document.createElement("button");
+      explain_button.classList.add('explain_button-class');
+      explain_button.textContent = "E";
+      explain_button.style.position = "fixed";
+      explain_button.style.left = (parseInt(initial_div.style.left) + initial_div.offsetWidth + 10) + "px";
+      explain_button.style.top = (parseInt(initial_div.style.top) - 30) + "px";
+      explain_button.style.border = "1px solid black";
+      explain_button.style.backgroundColor = "black";
+      explain_button.style.color = "white";
+      explain_button.style.textAlign = "center";
+      explain_button.style.fontSize = "16px";
+      explain_button.style.cursor = "pointer";
+      explain_button.style.borderRadius = "50%";
+      
+      var query_button = document.createElement("button");
+      query_button.classList.add('query_button-class');
+      query_button.textContent = "?";
+      query_button.style.position = "fixed";
+      query_button.style.left = (parseInt(initial_div.style.left) + initial_div.offsetWidth + 10) + "px";
+      query_button.style.top = initial_div.style.top;
+      query_button.style.backgroundColor = "black";
+      query_button.style.color = "white";
+      query_button.style.border = "1px solid black";
+      query_button.style.textAlign = "center";
+      query_button.style.fontSize = "16px";
+      query_button.style.cursor = "pointer";
+      query_button.style.borderRadius = "50%";
+
+      var examples_button = document.createElement("button");
+      examples_button.classList.add('examples_button-class');
+      examples_button.textContent = "C";
+      examples_button.style.position = "fixed";
+      examples_button.style.left = (parseInt(initial_div.style.left) + initial_div.offsetWidth + 10) + "px";
+      examples_button.style.top = (parseInt(initial_div.style.top) + 30) + "px";
+      examples_button.style.backgroundColor = "black";
+      examples_button.style.color = "white";
+      examples_button.style.border = "1px solid black";
+      examples_button.style.textAlign = "center";
+      examples_button.style.fontSize = "16px";
+      examples_button.style.cursor = "pointer";
+      examples_button.style.borderRadius = "50%";
+
+      // add new button to document
+      document.body.appendChild(explain_button);
+      document.body.appendChild(query_button);
+      document.body.appendChild(examples_button);
+    });
     
     document.body.appendChild(initial_div);
 
@@ -68,16 +129,38 @@ function createHighlightDot(selection){
         response_div.style.scrollbarWidth = 'thin';
         response_div.style.scrollbarColor = 'red yellow'; // set the colors
         response_div.style.scrollbarRadius = '10px'; // set the corner radius
-    
-        // Append text box to document
+
+        ///////////////////////////////////////
+        // create delete button
+        var delete_button = document.createElement("button");
+        delete_button.classList.add('delete_button-class');
+        delete_button.innerHTML = "X";
+        delete_button.style.position = "absolute";
+        delete_button.style.top = "5px";
+        delete_button.style.right = "5px";
+        delete_button.style.backgroundColor = "transparent";
+        delete_button.style.border = "0";
+        delete_button.style.color = "red";
+        delete_button.style.fontSize = "20px";
+        delete_button.style.cursor = "pointer";
+
+        // add event listener to delete button to remove response_div
+        delete_button.addEventListener("click", function() {
+            response_div.remove();
+            delete_button.remove();
+        });
+
         document.body.appendChild(response_div);
 
-        textBoxes.push([response_div, initialTop]);
+        // add delete button to response_div
+        response_div.insertBefore(delete_button, response_div.childNodes[0]);
+
+        //////////////////////////////////
     
-        // Add event listener to text box to remove it when clicked
-        response_div.addEventListener("click", function() {
-          response_div.remove();
-        });  
+        // Append text box to document
+
+        textBoxes.push([response_div, initialTop]);
+  
       })
       .catch(error => {
         console.log(error);
@@ -106,7 +189,7 @@ function Send(in_message) {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + "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"
+        "Authorization": "Bearer " + "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"
       },
       body: JSON.stringify(data)
     })
@@ -176,11 +259,6 @@ document.addEventListener("mouseup", function(event) {
         button.remove();
       });
     } 
-    if (divs.length > 0) {
-      divs.forEach((div) => {
-        div.remove();
-      });
-    }
   });
   /*
   // This function is executed when the user clicks on the extension's browser action button.
