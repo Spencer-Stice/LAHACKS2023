@@ -170,42 +170,6 @@ function queryMoment(selectedText) {
   query_input.style.borderRadius = "10px";
   query_input.style.color = "black";
 
-
-  // query_input.style.color = "#0d0c0c";
-  // query_input.style.textAlign = "left";
-  // query_input.style.fontSize = "16px";
-  // query_input.style.opacity = "1";
-  // query_input.style.cursor = "pointer";
-  // query_input.style.resize = "none";
-  // query_input.style.overflow = "hidden";
-
-  // query_input.style.borderRadius = "15px";
-  // query_input.style.fontSize = "14px";
-  // query_input.style.padding = "15px";
-  // //query_input.style.maxWidth = "300px";
-  // query_input.style.maxHeight = "200px";
-  // query_input.style.overflowY = "scroll";
-  // query_input.style.width = "200px";
-  // query_input.style.height = "10px";
-
-  // var height = 10;
-  // var level = 1;
-
-  // query_input.addEventListener('input', () => {
-  //   //query_input.style.height = 'auto';
-  //   //query_input.style.height = query_input.scrollHeight + 'px';
-  //   // query_input.style.height = query_input.scrollHeight + 'px';
-  //   console.log(query_input.value.length);
-  //   console.log(height, level);
-  //   if ((query_input.value.length / level) > 25) {
-  //       height += 10;
-  //       level += 1
-  //       query_input.style.height = height + 'px';
-  //       query_input.value += "\n";
-  //       console.log("moving");
-  //   }
-  // });
-
   query_input.addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
       // Enter key was pressed
